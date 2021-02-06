@@ -57,7 +57,7 @@ filetype indent on
 filetype plugin on
 filetype plugin indent on
 set encoding=utf-8
-set expandtab
+" set expandtab
 " set tabstop=4
 " set shiftwidth=4
 " set softtabstop=4
@@ -73,13 +73,12 @@ set autochdir
 
 call plug#begin('~/.config/nvim/site/autoload/')
 
-        Plug 'vim-airline/vim-airline'
-        Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
-        Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-        Plug 'preservim/nerdtree'
-
+Plug 'preservim/nerdtree'
 
 call plug#end()
 
