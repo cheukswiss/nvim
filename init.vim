@@ -36,6 +36,7 @@ nmap tu :tabe<CR>
 nmap tj :-tabnext<CR>
 nmap tk :+tabnext<CR>
 
+nmap <LEADER>m :set mouse=a<CR>
 
 syntax on
 set number
@@ -82,15 +83,22 @@ Plug 'vim-airline/vim-airline-themes'
 
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'crusoexia/vim-monokai'
+Plug 'connorholyday/vim-snazzy'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'preservim/nerdtree'
 
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+
 call plug#end()
 
 " colorscheme dracula
 " colorscheme monokai
+colorscheme snazzy
 
 " IndentLine
 let g:indent_guides_guide_size            = 1  " 指定对齐线的尺寸
@@ -107,4 +115,17 @@ nnoremap <leader>n :NERDTreeFocus<CR>
 nnoremap tt :NERDTree<CR>
 nnoremap tv :NERDTreeToggle<CR>
 nnoremap tf :NERDTreeFind<CR> 
+
+" Bash Language Server 
+let g:LanguageClient_serverCommands = {
+    \ 'sh': ['bash-language-server', 'start']
+    \ }
+
+
+
+
+
+
+
+
 
