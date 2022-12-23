@@ -108,6 +108,8 @@ nmap tu :tabe<CR>
 nmap tc :tabclose<CR>
 nmap <A-[> :-tabnext<CR>
 nmap <A-]> :+tabnext<CR>
+nmap <A-=> :bn<CR>
+nmap <A--> :bp<CR>
 
 
 " =========================
@@ -123,18 +125,18 @@ Plug 'Yggdroot/indentLine'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'crusoexia/vim-monokai'
+" Plug 'dracula/vim', { 'as': 'dracula' }
+" Plug 'crusoexia/vim-monokai'
 Plug 'connorholyday/vim-snazzy'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'preservim/nerdtree'
 
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
+ Plug 'autozimu/LanguageClient-neovim', {
+     \ 'branch': 'next',
+     \ 'do': 'bash install.sh',
+     \ }
 
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 
