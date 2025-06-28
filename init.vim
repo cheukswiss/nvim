@@ -10,6 +10,8 @@ noremap K 5k
 noremap H 5h
 noremap L 5l
 noremap <LEADER><CR> :nohlsearch<CR>
+noremap <LEADER>xd :%!xxd<CR>
+noremap <LEADER>nxd :%!xxd -r<CR>
 
 map s <nop>
 map S :w<CR>
@@ -120,7 +122,7 @@ nmap <A--> :bp<CR>
 
 call plug#begin('~/.config/nvim/site/autoload/')
 
-Plug 'Yggdroot/indentLine'
+" Plug 'Yggdroot/indentLine'
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
