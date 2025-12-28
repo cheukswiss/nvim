@@ -49,10 +49,8 @@ map("n", "sv", "<C-w>t<C-w>H")
 map("n", "sh", "<C-w>t<C-w>K")
 
 -- 窗口分割
-map("n", "si", ":set splitright<CR>:vsplit<CR>")
-map("n", "sn", ":set nosplitright<CR>:vsplit<CR>")
-map("n", "su", ":set nosplitbelow<CR>:split<CR>")
-map("n", "se", ":set splitbelow<CR>:split<CR>")
+map("n", "<leader>si", ":vsplit<CR>")
+map("n", "<leader>sv", ":split<CR>")
 
 -- 窗口间移动
 map("n", "<leader>l", "<C-w>l")

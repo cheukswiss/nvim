@@ -1,5 +1,5 @@
 -- bootstrap lazy.nvim, LazyVim and your plugins
-require("config.lazy")
+-- require("config.lazy")
 
 -- 基础设置
 require("config.options")
