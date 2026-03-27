@@ -1,10 +1,7 @@
--- Options are automatically loaded before lazy.nvim startup
--- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
--- Add any additional options here
-
 local opt = vim.opt
 
 -- 外观设置
+opt.termguicolors = true
 opt.syntax = "on"
 opt.number = true
 opt.relativenumber = false
@@ -24,9 +21,6 @@ vim.cmd("nohlsearch")
 
 -- 兼容性和文件类型设置
 opt.compatible = false
-vim.cmd("filetype on")
-vim.cmd("filetype indent on")
-vim.cmd("filetype plugin on")
 vim.cmd("filetype plugin indent on")
 
 -- 编码设置

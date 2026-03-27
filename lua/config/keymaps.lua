@@ -90,27 +90,15 @@ map("n", "<A-]>", ":+tabnext<CR>")
 map("n", "<A-=>", ":bn<CR>")
 map("n", "<A-->", ":bp<CR>")
 
--- Alt+数字切换标签页 (需要airline插件支持)
+-- Alt+数字切换标签页
 for i = 1, 9 do
-    map("n", "<A-" .. i .. ">", "<cmd>lua vim.cmd('AirlineSelectTab" .. i .. "')<CR>")
+    map("n", "<A-" .. i .. ">", i .. "gt")
 end
 
 -- =========================
 --        插件键位映射
 -- =========================
 
--- NERDTree 文件树操作
-map("n", "<leader>n", ":NERDTreeFocus<CR>")
-map("n", "tt", ":NERDTreeToggle<CR>")
-map("n", "tf", ":NERDTreeFind<CR>")
-
--- LeaderF 文件搜索
-map("n", "<C-p>", ":Leaderf file<CR>")
-
--- COC 代码导航
-map("n", "[g", "<Plug>(coc-diagnostic-prev)", { silent = true })
-map("n", "]g", "<Plug>(coc-diagnostic-next)", { silent = true })
-map("n", "gd", "<Plug>(coc-definition)", { silent = true })
-map("n", "gy", "<Plug>(coc-type-definition)", { silent = true })
-map("n", "gi", "<Plug>(coc-implementation)", { silent = true })
-map("n", "gr", "<Plug>(coc-references)", { silent = true })
+-- Ctrl+/ 注释/取消注释
+map("n", "<C-/>", "gcc", { remap = true })
+map("v", "<C-/>", "gc", { remap = true })
