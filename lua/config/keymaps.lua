@@ -77,23 +77,33 @@ map("n", "sms", ":mksession ./.session.vim<CR>")
 map("n", "sls", ":source ./.session.vim<CR>")
 
 -- =========================
---         标签页操作  
+--         Buffer 操作
+-- =========================
+
+-- Buffer 切换
+map("n", "<Tab>", ":BufferLineCycleNext<CR>")
+map("n", "<S-Tab>", ":BufferLineCyclePrev<CR>")
+
+-- Buffer 关闭
+map("n", "<leader>bc", ":Bdelete<CR>")
+map("n", "<leader>bo", ":BufferLineCloseOthers<CR>")
+
+-- Alt+数字切换 Buffer
+for i = 1, 9 do
+    map("n", "<A-" .. i .. ">", function()
+        require("bufferline").go_to(i, true)
+    end)
+end
+
+-- =========================
+--         标签页操作
 -- =========================
 
 -- 新建和关闭标签页
 map("n", "tu", ":tabe<CR>")
 map("n", "tc", ":tabclose<CR>")
-
--- 标签页切换
 map("n", "<A-[>", ":-tabnext<CR>")
 map("n", "<A-]>", ":+tabnext<CR>")
-map("n", "<A-=>", ":bn<CR>")
-map("n", "<A-->", ":bp<CR>")
-
--- Alt+数字切换标签页
-for i = 1, 9 do
-    map("n", "<A-" .. i .. ">", i .. "gt")
-end
 
 -- =========================
 --        插件键位映射
