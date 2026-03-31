@@ -13,7 +13,11 @@
 │   │   ├── keymaps.lua       # 快捷键映射
 │   │   └── lazy.lua          # lazy.nvim 插件管理器配置
 │   └── plugins/
-│       └── example.lua       # 插件定义
+│       ├── ui.lua            # 界面插件 (主题/状态栏/bufferline)
+│       ├── editor.lua        # 编辑器插件 (treesitter/telescope/toggleterm...)
+│       ├── lsp.lua           # LSP 相关插件
+│       ├── completion.lua    # 代码补全
+│       └── git.lua           # Git 集成
 └── README.md
 ```
 
@@ -34,6 +38,11 @@
 | [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | LSP 配置 |
 | [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) | 代码补全 |
 | [LuaSnip](https://github.com/L3MON4D3/LuaSnip) | 代码片段 |
+| [bufferline.nvim](https://github.com/akinsho/bufferline.nvim) | Buffer 标签栏 |
+| [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) | 安全关闭 Buffer |
+| [which-key.nvim](https://github.com/folke/which-key.nvim) | 快捷键提示 |
+| [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | 缩进参考线 |
+| [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | 浮动终端 |
 
 ## 快捷键
 
@@ -48,6 +57,7 @@ Leader 键为 `Space`。
 | `Q` | Normal | 退出 |
 | `E` | Normal | 重新加载文件 |
 | `s` | Normal | 禁用（无操作） |
+| `<leader>;` | Normal | 进入命令模式（等同于 `:`) |
 
 ### 增强移动
 
@@ -83,17 +93,21 @@ Leader 键为 `Space`。
 | `<up>/<down>` | Normal | 调整窗口高度 |
 | `<left>/<right>` | Normal | 调整窗口宽度 |
 
-### 标签页
+### Buffer 操作
 
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
-| `tu` | Normal | 新建标签页 |
-| `tc` | Normal | 关闭标签页 |
-| `<A-[>` | Normal | 上一个标签页 |
-| `<A-]>` | Normal | 下一个标签页 |
-| `<A-=>` | Normal | 下一个 buffer |
-| `<A-->` | Normal | 上一个 buffer |
-| `<A-1>` ~ `<A-9>` | Normal | 跳转到第 N 个标签页 |
+| `<A-[>` | Normal | 上一个 Buffer |
+| `<A-]>` | Normal | 下一个 Buffer |
+| `<A-1>` ~ `<A-9>` | Normal | 跳转到第 N 个 Buffer |
+| `<leader>bc` | Normal | 关闭当前 Buffer |
+| `<leader>bo` | Normal | 关闭其他 Buffer |
+
+### 终端
+
+| 快捷键 | 模式 | 功能 |
+|--------|------|------|
+| `<A-\>` | Normal/Terminal | 唤起/关闭浮动终端 |
 
 ### 会话管理
 

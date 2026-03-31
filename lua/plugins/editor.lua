@@ -91,4 +91,22 @@ return {
       require("nvim-surround").setup()
     end,
   },
+
+  -- 浮动终端
+  {
+    "akinsho/toggleterm.nvim",
+    version = "*",
+    keys = {
+      { "<A-\\>", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle float terminal" },
+      { "<A-\\>", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle float terminal", mode = "t" },
+    },
+    config = function()
+      require("toggleterm").setup({
+        direction = "float",
+        float_opts = {
+          border = "curved",
+        },
+      })
+    end,
+  },
 }

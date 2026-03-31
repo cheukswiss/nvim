@@ -27,6 +27,9 @@ map("n", "K", "5k")
 map("n", "H", "5h")
 map("n", "L", "5l")
 
+-- leader+; 进入命令模式
+map("n", "<leader>;", ":")
+
 -- 取消搜索高亮
 map("n", "<leader><CR>", ":nohlsearch<CR>")
 
@@ -81,8 +84,8 @@ map("n", "sls", ":source ./.session.vim<CR>")
 -- =========================
 
 -- Buffer 切换
-map("n", "<Tab>", ":BufferLineCycleNext<CR>")
-map("n", "<S-Tab>", ":BufferLineCyclePrev<CR>")
+map("n", "<A-]>", ":BufferLineCycleNext<CR>")
+map("n", "<A-[>", ":BufferLineCyclePrev<CR>")
 
 -- Buffer 关闭
 map("n", "<leader>bc", ":Bdelete<CR>")
@@ -95,17 +98,7 @@ for i = 1, 9 do
     end)
 end
 
--- =========================
---         标签页操作
--- =========================
-
--- 新建和关闭标签页
-map("n", "tu", ":tabe<CR>")
-map("n", "tc", ":tabclose<CR>")
-map("n", "<A-[>", ":-tabnext<CR>")
-map("n", "<A-]>", ":+tabnext<CR>")
-
--- =========================
+--=========================
 --        插件键位映射
 -- =========================
 
