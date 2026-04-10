@@ -48,3 +48,27 @@ opt.autochdir = true
 
 -- 剪贴板设置
 opt.clipboard:append("unnamed")
+
+-- 终端配色（Campbell，与 Windows Terminal 一致）
+-- 在 colorscheme 加载后覆盖，防止主题插件覆盖
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    vim.g.terminal_color_0  = '#0C0C0C'
+    vim.g.terminal_color_1  = '#C50F1F'
+    vim.g.terminal_color_2  = '#13A10E'
+    vim.g.terminal_color_3  = '#C19C00'
+    vim.g.terminal_color_4  = '#0037DA'
+    vim.g.terminal_color_5  = '#881798'
+    vim.g.terminal_color_6  = '#3A96DD'
+    vim.g.terminal_color_7  = '#CCCCCC'
+    vim.g.terminal_color_8  = '#767676'
+    vim.g.terminal_color_9  = '#E74856'
+    vim.g.terminal_color_10 = '#16C60C'
+    vim.g.terminal_color_11 = '#F9F1A5'
+    vim.g.terminal_color_12 = '#3B78FF'
+    vim.g.terminal_color_13 = '#B4009E'
+    vim.g.terminal_color_14 = '#61D6D6'
+    vim.g.terminal_color_15 = '#F2F2F2'
+  end,
+})
+

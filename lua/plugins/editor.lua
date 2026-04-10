@@ -106,6 +106,10 @@ return {
         float_opts = {
           border = "curved",
         },
+        highlights = {
+          Normal = { guibg = '#0C0C0C', guifg = '#CCCCCC' },
+          NormalFloat = { guibg = '#0C0C0C', guifg = '#CCCCCC' },
+        },
       })
     end,
   },
