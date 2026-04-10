@@ -3,6 +3,16 @@
 #  在 ~/.zshrc 末尾 source 本文件
 # ══════════════════════════════════════════════
 
+unsetopt share_history
+# ZSH_THEME="robbyrussell"
+
+# plugins=(
+# 	git
+# 	colored-man-pages
+# 	zsh-syntax-highlighting
+# 	extract
+# )
+
 # ── 自动进入 tmux ───────────────────────────
 if command -v tmux &>/dev/null && [ -z "$TMUX" ]; then
   tmux attach || tmux new -s main
