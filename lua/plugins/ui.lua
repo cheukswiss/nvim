@@ -1,10 +1,10 @@
 return {
   -- colorscheme
   {
-    "folke/tokyonight.nvim",
+    "Mofiqul/vscode.nvim",
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme("tokyonight-night")
+      vim.cmd.colorscheme("vscode")
     end,
   },
 
@@ -14,7 +14,7 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("lualine").setup({
-        options = { theme = "tokyonight" },
+        options = { theme = "vscode" },
       })
     end,
   },
