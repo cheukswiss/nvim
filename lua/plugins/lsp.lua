@@ -1,4 +1,29 @@
 return {
+  -- nvim-lint: 异步 linter 集成（补充 LSP 诊断覆盖不到的检查）
+  {
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPost", "BufWritePost" },
+    config = function()
+      local lint = require("lint")
+      lint.linters_by_ft = {
+        sh = { "shellcheck" },
+        bash = { "shellcheck" },
+        python = { "ruff" },
+        javascript = { "eslint_d" },
+        typescript = { "eslint_d" },
+        go = { "golangcilint" },
+        c = { "cppcheck" },
+        cpp = { "cppcheck" },
+      }
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+        group = vim.api.nvim_create_augroup("nvim_lint", { clear = true }),
+        callback = function()
+          lint.try_lint()
+        end,
+      })
+    end,
+  },
+
   -- mason: LSP server 自动安装管理
   {
     "williamboman/mason.nvim",

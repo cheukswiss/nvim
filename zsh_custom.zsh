@@ -4,22 +4,18 @@
 # ══════════════════════════════════════════════
 
 unsetopt share_history
-# ZSH_THEME="robbyrussell"
 
-# plugins=(
-# 	git
-# 	colored-man-pages
-# 	zsh-syntax-highlighting
-# 	extract
-# )
-
-# ── 自动进入 tmux ───────────────────────────
-if command -v tmux &>/dev/null && [ -z "$TMUX" ]; then
+# ── 自动进入 tmux（SSH 会话跳过，避免嵌套）──
+if command -v tmux &>/dev/null && [ -z "$TMUX" ] && [ -z "$SSH_CONNECTION" ]; then
   tmux attach || tmux new -s main
 fi
 
 # ── 别名 ────────────────────────────────────
-if command -v exa &>/dev/null; then
+if command -v eza &>/dev/null; then
+  alias ll='eza -lF'
+  alias la='eza -a'
+  alias l='eza'
+elif command -v exa &>/dev/null; then
   alias ll='exa -lF'
   alias la='exa -a'
   alias l='exa'
