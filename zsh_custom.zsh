@@ -20,7 +20,7 @@ fi
 
 # ── 别名 ────────────────────────────────────
 if command -v exa &>/dev/null; then
-  alias ll='exa -alF'
+  alias ll='exa -lF'
   alias la='exa -a'
   alias l='exa'
 fi

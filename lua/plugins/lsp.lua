@@ -37,7 +37,28 @@ return {
       "hrsh7th/cmp-nvim-lsp",
     },
     config = function()
+      -- 诊断外观
+      vim.diagnostic.config({
+        virtual_text = {
+          prefix = "●",
+          spacing = 4,
+          source = "if_many",
+        },
+        signs = true,
+        underline = true,
+        update_in_insert = false,
+        severity_sort = true,
+        float = {
+          border = "rounded",
+          source = "if_many",
+          header = "",
+          prefix = "",
+        },
+      })
+
       -- LSP 快捷键（在 LSP attach 时绑定）
+      -- 悬浮窗的圆角边框通过 hover/signature_help 的 config 参数传入
+      -- （vim.lsp.handlers[...] = vim.lsp.with(...) 在 0.11+ 已废弃）
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(event)
           local opts = { buffer = event.buf, silent = true }
@@ -45,7 +66,7 @@ return {
           vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
           vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
           vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, opts)
-          vim.keymap.set("n", "gk", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "gk", function() vim.lsp.buf.hover({ border = "rounded" }) end, opts)
           vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
           vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
           vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)

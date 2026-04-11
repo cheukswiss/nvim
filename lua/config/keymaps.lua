@@ -1,7 +1,3 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
--- Add any additional keymaps here
-
 -- 设置leader键
 vim.g.mapleader = " "
 
@@ -23,7 +19,7 @@ map("i", "jj", "<ESC>")
 
 -- 增强移动键
 map("n", "J", "5j")
-map("n", "K", "5k")  
+map("n", "K", "5k")
 map("n", "H", "5h")
 map("n", "L", "5l")
 
@@ -40,7 +36,7 @@ map("n", "<leader>nxd", ":%!xxd -r<CR>")
 -- 禁用s键，重新映射保存和退出
 map("n", "s", "<nop>")
 map("n", "S", ":w<CR>")
-map("n", "Q", ":q<CR>") 
+map("n", "Q", ":q<CR>")
 map("n", "E", ":e!<CR>")
 
 -- =========================
@@ -57,7 +53,7 @@ map("n", "<leader>sv", ":split<CR>")
 
 -- 窗口间移动
 map("n", "<leader>l", "<C-w>l")
-map("n", "<leader>k", "<C-w>k")  
+map("n", "<leader>k", "<C-w>k")
 map("n", "<leader>h", "<C-w>h")
 map("n", "<leader>j", "<C-w>j")
 
@@ -72,8 +68,8 @@ map("n", "<right>", ":vertical resize+5<CR>")
 -- =========================
 
 -- 鼠标设置
-map("n", "sma", ":set mouse=a<CR>")
-map("n", "smc", ":set mouse=a<CR>")
+map("n", "sma", ":set mouse=a<CR>")   -- 启用鼠标
+map("n", "smc", ":set mouse=<CR>")    -- 禁用鼠标（便于终端原生选中复制）
 
 -- 会话保存和加载
 map("n", "sms", ":mksession ./.session.vim<CR>")
