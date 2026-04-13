@@ -7,24 +7,32 @@
 ## 快速安装
 
 ```bash
-bash ~/.config/nvim/install.sh
+bash ~/.config/nvim/install.sh          # 交互模式（逐项确认）
+bash ~/.config/nvim/install.sh --all    # 全部安装
+bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 ```
 
+可选模块：`deps`（系统依赖）、`tmux`、`zsh`、`linters`。
+
 安装脚本会自动完成：
-- 检查依赖（tmux、xclip、exa、yazi）
+- 检查并安装系统依赖（tmux、xclip/pbcopy、eza、yazi）
 - 创建 `~/.tmux.conf` → `tmux.conf` 符号链接
 - 在 `~/.zshrc` 末尾追加 `source zsh_custom.zsh`
 - 安装 oh-my-zsh 插件（zsh-syntax-highlighting）
 - 安装 TPM（tmux 插件管理器）
+- 部署自定义 tmux2k 插件（host 状态栏等）
+- 安装 linters（shellcheck、cppcheck、ruff、golangci-lint、eslint_d）
 
 ## 目录结构
 
 ```
 ~/.config/nvim/
 ├── init.lua                  # 入口文件
-├── install.sh                # dotfiles 一键安装脚本
+├── install.sh                # dotfiles 交互式安装脚本
 ├── tmux.conf                 # tmux 配置
 ├── zsh_custom.zsh            # zsh 自定义配置
+├── tmux2k-custom/            # 自定义 tmux2k 插件（官方未提供）
+│   └── host.sh               # 状态栏 host 显示
 ├── lua/
 │   ├── config/
 │   │   ├── options.lua       # 基础选项
@@ -34,7 +42,7 @@ bash ~/.config/nvim/install.sh
 │   └── plugins/
 │       ├── ui.lua            # 界面插件 (主题/状态栏/bufferline)
 │       ├── editor.lua        # 编辑器插件 (treesitter/telescope/flash/toggleterm...)
-│       ├── lsp.lua           # LSP 相关插件
+│       ├── lsp.lua           # LSP + linter 插件
 │       ├── completion.lua    # 代码补全
 │       └── git.lua           # Git 集成
 └── README.md
@@ -64,6 +72,8 @@ bash ~/.config/nvim/install.sh
 | [which-key.nvim](https://github.com/folke/which-key.nvim) | 快捷键提示 |
 | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | 缩进参考线 |
 | [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | 浮动终端 |
+| [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d 等） |
+| [mason-lspconfig.nvim](https://github.com/williamboman/mason-lspconfig.nvim) | Mason 与 lspconfig 桥接 |
 
 ## 快捷键
 
@@ -279,6 +289,9 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | `Alt-W` | 关闭面板（最后一个面板时确认退出） |
 | `Alt-Q` | 确认退出 tmux |
 | `Alt-B` | 分离 tmux |
+| `Alt-\` | 浮动终端（nvim 内透传给 nvim，再按关闭，scratch 会话持久化） |
+| `Alt-g` | lazygit 浮动窗口 |
+| `Alt-f` | tmux-thumbs 快速复制（标签标记屏幕文本） |
 | `前缀 + r` | 重载配置 |
 | `前缀 + Esc` | 进入复制模式 |
 | `前缀 + P` | 粘贴 |
@@ -294,12 +307,16 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | tmux-resurrect | 会话保存/恢复 |
 | tmux-continuum | 自动保存（15 分钟间隔） |
 | tmux2k | 状态栏主题（置顶，显示 session/git/cwd/host/cpu/ram/network/time） |
+| tmux-thumbs | 快速复制屏幕文本（URL/路径/git hash/IP 地址） |
 
 ## ZSH 自定义配置
 
 `zsh_custom.zsh` 由本仓库管理，在 `~/.zshrc` 中 source：
 
+- `vi`/`vim` 自动指向 `nvim`
 - 禁用 `share_history`（各终端独立历史）
-- 自动进入 tmux（`tmux attach || tmux new -s main`）
-- `exa` 别名：`ll`（详细列表）、`la`（显示隐藏）、`l`（简洁）
+- 自动进入 tmux（本地环境自动 attach/new `main` 会话，SSH 跳过）
+- `t [name]` 函数：快速创建/连接 tmux 会话（默认 `main`）
+- `eza`/`exa` 别名：`ll`（详细列表）、`la`（显示隐藏）、`l`（简洁）
 - `y` 函数：启动 yazi 文件管理器并跟随目录切换
+- `lg` 函数：启动 lazygit 并跟随目录切换
