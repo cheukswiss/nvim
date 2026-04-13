@@ -18,15 +18,16 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 if [[ "$(uname)" == "Darwin" ]]; then
   PLATFORM="macOS"
   PKG_CMD=(brew install)
-  # macOS 自带 pbcopy，不需要 xclip
-  DEPS=(tmux eza yazi)
+  DEPS=(tmux)
 else
   PLATFORM="Linux"
   PKG_CMD=(sudo apt install -y)
-  DEPS=(tmux xclip eza yazi)
+  DEPS=(tmux xclip)
 fi
 
-LINTERS=(shellcheck ruff golangci-lint cppcheck)
+CARGO_DEPS=(eza yazi)
+LINTERS=(shellcheck cppcheck)
+CUSTOM_LINTERS=(golangci-lint ruff)
 NPM_LINTERS=(eslint_d)
 
 # ── 颜色与输出 ──────────────────────────────
@@ -41,10 +42,10 @@ err()   { echo -e "${RED}[ERR]${RESET} $1"; }
 # ── 状态检测函数 ────────────────────────────
 
 deps_status() {
-  local installed=0 total=${#DEPS[@]} missing_list=()
-  for cmd in "${DEPS[@]}"; do
+  local installed=0 total=$(( ${#DEPS[@]} + ${#CARGO_DEPS[@]} )) missing_list=()
+  for cmd in "${DEPS[@]}" "${CARGO_DEPS[@]}"; do
     if command -v "$cmd" &>/dev/null; then
-      ((installed++))
+      installed=$((installed + 1))
     else
       missing_list+=("$cmd")
     fi
@@ -62,11 +63,11 @@ tmux_status() {
   local ok=0 total=2
   # 检查 symlink
   if [ -L "$TMUX_CONF" ] && [ "$(readlink "$TMUX_CONF")" = "$SCRIPT_DIR/tmux.conf" ]; then
-    ((ok++))
+    ok=$((ok + 1))
   fi
   # 检查 TPM
   if [ -d "$TPM_DIR" ]; then
-    ((ok++))
+    ok=$((ok + 1))
   fi
   if (( ok == total )); then echo "done"
   elif (( ok == 0 )); then echo "none"
@@ -78,11 +79,11 @@ zsh_status() {
   local ok=0 total=2
   # 检查 source line
   if [ -f "$ZSHRC" ] && grep -qF "zsh_custom.zsh" "$ZSHRC"; then
-    ((ok++))
+    ok=$((ok + 1))
   fi
   # 检查 zsh-syntax-highlighting
   if [ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
-    ((ok++))
+    ok=$((ok + 1))
   fi
   if (( ok == total )); then echo "done"
   elif (( ok == 0 )); then echo "none"
@@ -91,10 +92,10 @@ zsh_status() {
 }
 
 linters_status() {
-  local installed=0 total=$(( ${#LINTERS[@]} + ${#NPM_LINTERS[@]} )) missing_list=()
-  for cmd in "${LINTERS[@]}" "${NPM_LINTERS[@]}"; do
+  local installed=0 total=$(( ${#LINTERS[@]} + ${#CUSTOM_LINTERS[@]} + ${#NPM_LINTERS[@]} )) missing_list=()
+  for cmd in "${LINTERS[@]}" "${CUSTOM_LINTERS[@]}" "${NPM_LINTERS[@]}"; do
     if command -v "$cmd" &>/dev/null; then
-      ((installed++))
+      installed=$((installed + 1))
     else
       missing_list+=("$cmd")
     fi
@@ -134,6 +135,23 @@ format_status() {
   esac
 }
 
+# ── 通用确认安装 ────────────────────────────
+# confirm_install <描述> <命令...>
+# 返回值: 0=已执行, 1=用户跳过
+confirm_install() {
+  local desc="$1"; shift
+  echo -e "将执行: ${CYAN}${desc}${RESET}"
+  if [[ "${AUTO_INSTALL:-}" != "1" ]]; then
+    local ans
+    read -rp "确认安装？[Y/n] " ans
+    if [[ "$ans" =~ ^[Nn]$ ]]; then
+      skip "跳过 $desc"
+      return 1
+    fi
+  fi
+  "$@"
+}
+
 # ── 安装函数 ────────────────────────────────
 
 install_deps() {
@@ -147,17 +165,44 @@ install_deps() {
       missing+=("$cmd")
     fi
   done
-  if [ ${#missing[@]} -eq 0 ]; then
-    info "所有依赖已就绪"
-    return
+  if [ ${#missing[@]} -gt 0 ]; then
+    echo ""
+    echo -e "将执行: ${CYAN}${PKG_CMD[*]} ${missing[*]}${RESET}"
+    if [[ "${AUTO_INSTALL:-}" != "1" ]]; then
+      read -rp "确认安装？[Y/n] " ans
+      [[ "$ans" =~ ^[Nn]$ ]] && { skip "跳过系统依赖"; missing=(); }
+    fi
+    if [ ${#missing[@]} -gt 0 ]; then
+      if "${PKG_CMD[@]}" "${missing[@]}"; then
+        info "系统依赖安装完成"
+      else
+        err "部分系统依赖安装失败"
+      fi
+    fi
   fi
-  echo ""
-  echo -e "将执行: ${CYAN}${PKG_CMD[*]} ${missing[*]}${RESET}"
-  if [[ "${AUTO_INSTALL:-}" != "1" ]]; then
-    read -rp "确认安装？[Y/n] " ans
-    [[ "$ans" =~ ^[Nn]$ ]] && { skip "跳过依赖安装"; return; }
-  fi
-  "${PKG_CMD[@]}" "${missing[@]}" && info "依赖安装完成" || err "部分依赖安装失败"
+
+  # cargo 依赖（yazi 等不在 apt 仓库的工具）
+  for cmd in "${CARGO_DEPS[@]}"; do
+    if command -v "$cmd" &>/dev/null; then
+      skip "$cmd 已安装"
+    else
+      if ! command -v cargo &>/dev/null; then
+        warn "cargo 未安装，跳过 $cmd（请先安装 Rust: https://rustup.rs）"
+        continue
+      fi
+      local cargo_pkg=("$cmd")
+      [[ "$cmd" == "yazi" ]] && cargo_pkg=(yazi-fm yazi-cli)
+      local rc=0
+      confirm_install "cargo install --locked ${cargo_pkg[*]}" \
+        cargo install --locked "${cargo_pkg[@]}" \
+        || rc=$?
+      if [[ $rc -eq 0 ]]; then
+        info "$cmd 安装完成"
+      elif [[ $rc -ne 1 ]]; then
+        err "$cmd 安装失败"
+      fi
+    fi
+  done
 }
 
 install_tmux() {
@@ -233,11 +278,54 @@ install_linters() {
       [[ "$ans" =~ ^[Nn]$ ]] && { skip "跳过 brew/apt linters"; pkg_missing=(); }
     fi
     if [ ${#pkg_missing[@]} -gt 0 ]; then
-      "${PKG_CMD[@]}" "${pkg_missing[@]}" && info "Linters 安装完成" || err "部分 linters 安装失败"
+      if "${PKG_CMD[@]}" "${pkg_missing[@]}"; then
+        info "Linters 安装完成"
+      else
+        err "部分 linters 安装失败"
+      fi
     fi
   fi
 
-  # npm linters
+  # golangci-lint（官方安装脚本）
+  if command -v golangci-lint &>/dev/null; then
+    skip "golangci-lint 已安装"
+  else
+    mkdir -p "$HOME/.local/bin"
+    local rc=0
+    confirm_install "curl 安装 golangci-lint 到 ~/.local/bin" \
+      bash -c 'curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b "$HOME/.local/bin"' \
+      || rc=$?
+    if [[ $rc -eq 0 ]]; then
+      info "golangci-lint 安装完成"
+    elif [[ $rc -ne 1 ]]; then
+      err "golangci-lint 安装失败"
+    fi
+  fi
+
+  # ruff（pipx 安装）
+  if command -v ruff &>/dev/null; then
+    skip "ruff 已安装"
+  else
+    if ! command -v pipx &>/dev/null; then
+      warn "pipx 未安装，尝试安装 pipx..."
+      "${PKG_CMD[@]}" pipx || true
+    fi
+    if command -v pipx &>/dev/null; then
+      local rc=0
+      confirm_install "pipx install ruff" \
+        pipx install ruff \
+        || rc=$?
+      if [[ $rc -eq 0 ]]; then
+        info "ruff 安装完成"
+      elif [[ $rc -ne 1 ]]; then
+        err "ruff 安装失败"
+      fi
+    else
+      err "pipx 不可用，跳过 ruff"
+    fi
+  fi
+
+  # npm linters（优先用户目录安装）
   local npm_missing=()
   for cmd in "${NPM_LINTERS[@]}"; do
     if command -v "$cmd" &>/dev/null; then
@@ -251,12 +339,24 @@ install_linters() {
       warn "npm 未安装，跳过 ${npm_missing[*]}"
       return
     fi
-    echo -e "将执行: ${CYAN}npm install -g ${npm_missing[*]}${RESET}"
-    if [[ "${AUTO_INSTALL:-}" != "1" ]]; then
-      read -rp "确认安装？[Y/n] " ans
-      [[ "$ans" =~ ^[Nn]$ ]] && { skip "跳过 npm linters"; return; }
+    # 检测 npm prefix 是否需要 sudo
+    local npm_prefix
+    npm_prefix="$(npm config get prefix 2>/dev/null)"
+    local npm_cmd=(npm install -g)
+    if [[ "$npm_prefix" == /usr* ]] && [[ "$(uname)" != "Darwin" ]]; then
+      # 系统级 prefix，设置用户目录避免 sudo
+      mkdir -p "$HOME/.local"
+      npm_cmd=(npm install -g --prefix "$HOME/.local")
     fi
-    npm install -g "${npm_missing[@]}" && info "npm linters 安装完成" || err "npm linters 安装失败"
+    local rc=0
+    confirm_install "${npm_cmd[*]} ${npm_missing[*]}" \
+      "${npm_cmd[@]}" "${npm_missing[@]}" \
+      || rc=$?
+    if [[ $rc -eq 0 ]]; then
+      info "npm linters 安装完成"
+    elif [[ $rc -ne 1 ]]; then
+      err "npm linters 安装失败"
+    fi
   fi
 }
 
