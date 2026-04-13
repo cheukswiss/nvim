@@ -26,6 +26,7 @@ else
 fi
 
 CARGO_DEPS=(eza yazi)
+GO_DEPS=("glow github.com/charmbracelet/glow@latest")
 LINTERS=(shellcheck cppcheck)
 CUSTOM_LINTERS=(golangci-lint ruff)
 NPM_LINTERS=(eslint_d)
@@ -42,8 +43,11 @@ err()   { echo -e "${RED}[ERR]${RESET} $1"; }
 # ── 状态检测函数 ────────────────────────────
 
 deps_status() {
-  local installed=0 total=$(( ${#DEPS[@]} + ${#CARGO_DEPS[@]} )) missing_list=()
-  for cmd in "${DEPS[@]}" "${CARGO_DEPS[@]}"; do
+  local installed=0 total=$(( ${#DEPS[@]} + ${#CARGO_DEPS[@]} + ${#GO_DEPS[@]} )) missing_list=()
+  local all_cmds=()
+  for cmd in "${DEPS[@]}" "${CARGO_DEPS[@]}"; do all_cmds+=("$cmd"); done
+  for entry in "${GO_DEPS[@]}"; do all_cmds+=("${entry%% *}"); done
+  for cmd in "${all_cmds[@]}"; do
     if command -v "$cmd" &>/dev/null; then
       installed=$((installed + 1))
     else
@@ -195,6 +199,28 @@ install_deps() {
       local rc=0
       confirm_install "cargo install --locked ${cargo_pkg[*]}" \
         cargo install --locked "${cargo_pkg[@]}" \
+        || rc=$?
+      if [[ $rc -eq 0 ]]; then
+        info "$cmd 安装完成"
+      elif [[ $rc -ne 1 ]]; then
+        err "$cmd 安装失败"
+      fi
+    fi
+  done
+
+  # go 依赖（glow 等）
+  for entry in "${GO_DEPS[@]}"; do
+    local cmd="${entry%% *}" pkg="${entry#* }"
+    if command -v "$cmd" &>/dev/null; then
+      skip "$cmd 已安装"
+    else
+      if ! command -v go &>/dev/null; then
+        warn "go 未安装，跳过 $cmd（请先安装 Go: https://go.dev/dl）"
+        continue
+      fi
+      local rc=0
+      confirm_install "go install $pkg" \
+        go install "$pkg" \
         || rc=$?
       if [[ $rc -eq 0 ]]; then
         info "$cmd 安装完成"
