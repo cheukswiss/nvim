@@ -228,6 +228,14 @@ install_tmux() {
     git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
     info "TPM 已安装，启动 tmux 后按 Alt-b I 安装插件"
   fi
+
+  # 部署 tmux2k-custom/（官方未提供的插件，如 host）
+  local custom_dir="$SCRIPT_DIR/tmux2k-custom"
+  local dest_dir="$HOME/.tmux/plugins/tmux2k/plugins"
+  if [ -d "$custom_dir" ] && [ -d "$dest_dir" ]; then
+    cp "$custom_dir"/*.sh "$dest_dir/" 2>/dev/null
+    info "自定义 tmux2k 插件已部署"
+  fi
 }
 
 install_zsh() {
