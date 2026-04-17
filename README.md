@@ -296,14 +296,13 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | `前缀 + Esc` | 进入复制模式 |
 | `前缀 + P` | 粘贴 |
 
-复制模式使用 Vi 键位（`v` 选择、`y` 复制、滚轮每次 1 行）。
+复制模式使用 Vi 键位：`v` 选择，`y` / `Enter` / 鼠标释放即复制并退出（自动写入系统剪贴板），滚轮每次 1 行。
 
 ### Tmux 插件
 
 | 插件 | 用途 |
 |------|------|
 | tmux-sensible | 合理默认值 |
-| tmux-yank | 系统剪贴板集成 |
 | tmux-resurrect | 会话保存/恢复 |
 | tmux-continuum | 自动保存（15 分钟间隔） |
 | tmux2k | 状态栏主题（置顶，显示 session/git/cwd/host/cpu/ram/network/time） |

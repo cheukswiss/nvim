@@ -190,8 +190,18 @@ return {
     "akinsho/toggleterm.nvim",
     version = "*",
     keys = {
-      { "<A-\\>", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle float terminal" },
-      { "<A-\\>", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle float terminal", mode = "t" },
+      {
+        "<A-\\>",
+        function() vim.cmd(vim.v.count1 .. "ToggleTerm direction=float") end,
+        desc = "Toggle float terminal (count = id)",
+      },
+      {
+        "<A-\\>",
+        [[<C-\><C-n><cmd>ToggleTerm<cr>]],
+        mode = "t",
+        desc = "Hide float terminal",
+      },
+      { "<leader>tl", "<cmd>TermSelect<cr>", desc = "Select terminal" },
     },
     config = function()
       require("toggleterm").setup({

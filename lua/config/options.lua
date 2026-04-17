@@ -6,6 +6,7 @@ opt.syntax = "on"
 opt.number = true
 opt.relativenumber = false
 opt.cursorline = true
+opt.cursorlineopt = "number"  -- 仅高亮行号，避免全行重绘（tmux 内移动更跟手）
 opt.wrap = true
 opt.showcmd = true
 opt.wildmenu = true

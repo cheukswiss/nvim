@@ -17,11 +17,11 @@ end
 -- 插入模式下jj退出到normal模式
 map("i", "jj", "<ESC>")
 
--- 增强移动键
-map("n", "J", "5j")
-map("n", "K", "5k")
-map("n", "H", "5h")
-map("n", "L", "5l")
+-- 增强移动键（normal + visual；x 模式不影响 operator-pending，如 dH 仍可用）
+map({ "n", "x" }, "J", "5j")
+map({ "n", "x" }, "K", "5k")
+map({ "n", "x" }, "H", "5h")
+map({ "n", "x" }, "L", "5l")
 
 -- leader+; 进入命令模式
 map("n", "<leader>;", ":")
