@@ -1,6 +1,6 @@
 # Neovim Configuration
 
-基于 Lua 的轻量 Neovim 配置，使用 [lazy.nvim](https://github.com/folke/lazy.nvim) 管理插件，Neovim 0.11+ 原生 LSP API。
+基于 Lua 的轻量 Neovim 配置，使用 [lazy.nvim](https://github.com/folke/lazy.nvim) 管理插件，Neovim 0.12+ 原生 LSP / inline completion API。
 
 本仓库同时管理 tmux、zsh 自定义配置和一键安装脚本。
 
@@ -53,7 +53,7 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | 插件 | 用途 |
 |------|------|
 | [vscode.nvim](https://github.com/Mofiqul/vscode.nvim) | 配色方案 (VSCode 风格) |
-| [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) | 语法高亮 / 增量选择 |
+| [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) | 语法 parser 管理（main 分支，0.12+） |
 | [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | 模糊搜索 |
 | [telescope-fzf-native.nvim](https://github.com/nvim-telescope/telescope-fzf-native.nvim) | Telescope fzf 排序器（C 实现，10x 速度提升） |
 | [nvim-tree.lua](https://github.com/nvim-tree/nvim-tree.lua) | 文件树 |
@@ -63,17 +63,21 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [nvim-surround](https://github.com/kylechui/nvim-surround) | 括号/引号包裹操作 |
 | [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) | 状态栏 |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git 状态标记 / hunk 操作 |
-| [mason.nvim](https://github.com/williamboman/mason.nvim) | LSP server 安装管理 |
-| [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | LSP 配置 |
-| [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) | 代码补全 |
-| [LuaSnip](https://github.com/L3MON4D3/LuaSnip) | 代码片段 |
+| [mason.nvim](https://github.com/williamboman/mason.nvim) | LSP server / 工具二进制安装 |
+| [mason-tool-installer.nvim](https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim) | 启动时自动确保所需工具已安装 |
+| [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | LSP server 默认配置（0.11+ lsp/*.lua 格式） |
+| [lazydev.nvim](https://github.com/folke/lazydev.nvim) | lua_ls 识别 Neovim / 插件 Lua API 类型 |
+| [blink.cmp](https://github.com/saghen/blink.cmp) | 代码补全（Rust 实现，替代 nvim-cmp） |
+| [LuaSnip](https://github.com/L3MON4D3/LuaSnip) | 代码片段引擎 |
+| [friendly-snippets](https://github.com/rafamadriz/friendly-snippets) | 通用 snippet 集 |
 | [bufferline.nvim](https://github.com/akinsho/bufferline.nvim) | Buffer 标签栏 |
 | [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) | 安全关闭 Buffer |
 | [which-key.nvim](https://github.com/folke/which-key.nvim) | 快捷键提示 |
 | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | 缩进参考线 |
 | [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | 浮动终端 |
 | [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d 等） |
-| [mason-lspconfig.nvim](https://github.com/williamboman/mason-lspconfig.nvim) | Mason 与 lspconfig 桥接 |
+
+GitHub Copilot 通过 [`copilot-language-server`](https://www.npmjs.com/package/@github/copilot-language-server)（由 Mason 安装）以原生 LSP `inline_completion` 接入，无需第三方 Vim 插件。首次使用在任意源文件运行 `:LspCopilotSignIn` 完成授权。
 
 ## 快捷键
 
@@ -201,13 +205,6 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | `ds"` | Normal | 删除引号包裹 |
 | `cs"'` | Normal | 双引号换单引号 |
 
-### Treesitter 增量选择
-
-| 快捷键 | 模式 | 功能 |
-|--------|------|------|
-| `<C-Space>` | Normal | 开始/扩展选择（按语法节点） |
-| `<BS>` | Visual | 缩小选择 |
-
 ### Git (gitsigns)
 
 | 快捷键 | 模式 | 功能 |
@@ -229,47 +226,73 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 
 ### LSP (语言服务)
 
+本配置的自定义映射：
+
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
 | `gd` | Normal | 跳转定义 |
-| `gr` | Normal | 查看引用 |
-| `gi` | Normal | 跳转实现 |
-| `gy` | Normal | 跳转类型定义 |
 | `gk` | Normal | 悬浮文档 |
 | `<leader>rn` | Normal | 重命名 |
 | `<leader>ca` | Normal | 代码操作 |
 | `[d` | Normal | 上一个诊断 |
 | `]d` | Normal | 下一个诊断 |
 
-### 代码补全 (nvim-cmp)
+Neovim 0.11+ 内置 LSP 默认映射（无需配置即可使用）：
 
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
-| `<Tab>` | Insert | 选择下一个补全项 / 跳转 snippet |
-| `<S-Tab>` | Insert | 选择上一个补全项 / 反跳 snippet |
-| `<CR>` | Insert | 确认补全 |
-| `<C-Space>` | Insert | 手动触发补全 |
+| `K` | Normal | 悬浮文档（与 `gk` 等效） |
+| `grn` | Normal | 重命名 |
+| `gra` | Normal / Visual | 代码操作 |
+| `grr` | Normal | 查看引用 |
+| `gri` | Normal | 跳转实现 |
+| `grt` | Normal | 跳转类型定义 |
+| `gO` | Normal | 文档符号列表 |
+| `<C-S>` | Insert | 签名帮助 |
+
+### Copilot (LSP inline completion)
+
+Copilot 以 `copilot-language-server` 形式通过原生 `vim.lsp.inline_completion` 接入，幽灵文字直接由 LSP 渲染。
+
+| 快捷键 | 模式 | 功能 |
+|--------|------|------|
+| `<C-l>` | Insert | 接受当前建议 |
+| `<M-]>` | Insert | 下一个建议 |
+| `<M-[>` | Insert | 上一个建议 |
+| `:LspCopilotSignIn` | Cmd | 首次授权登录 |
+| `:LspCopilotSignOut` | Cmd | 退出登录 |
+
+### 代码补全 (blink.cmp)
+
+使用 blink.cmp 的 `default` 预设键位：
+
+| 快捷键 | 模式 | 功能 |
+|--------|------|------|
+| `<C-Space>` | Insert | 手动触发 / 显示文档 |
+| `<C-n>` | Insert | 下一项 |
+| `<C-p>` | Insert | 上一项 |
+| `<C-y>` | Insert | 确认补全 |
 | `<C-e>` | Insert | 关闭补全菜单 |
-| `<C-b>` | Insert | 向上滚动文档 |
-| `<C-f>` | Insert | 向下滚动文档 |
+| `<Tab>` / `<S-Tab>` | Insert | snippet 占位符前进 / 回退 |
 
 ## LSP 语言支持
 
-使用 Neovim 0.11+ 原生 API（`vim.lsp.config` / `vim.lsp.enable`）配置。
+使用 Neovim 0.11+ 原生 API（`vim.lsp.config` / `vim.lsp.enable`）配置，server 安装由 `mason-tool-installer` 启动时自动确保。
 
 已启用的 LSP server：
 
-| Server | 语言 | 系统依赖 |
+| Server | 语言 / 功能 | Mason 包名 |
 |--------|------|---------|
-| `lua_ls` | Lua | 无 (Mason 自动安装) |
-| `pyright` | Python | npm |
-| `gopls` | Go | go |
-| `ts_ls` | TypeScript / JavaScript | npm |
-| `clangd` | C / C++ | clangd (`apt install clangd`) |
-| `rust_analyzer` | Rust | rustup |
-| `bashls` | Bash / Shell | npm |
+| `lua_ls` | Lua | `lua-language-server` |
+| `pyright` | Python | `pyright` |
+| `gopls` | Go | `gopls` |
+| `ts_ls` | TypeScript / JavaScript | `typescript-language-server` |
+| `clangd` | C / C++ | `clangd` |
+| `rust_analyzer` | Rust | `rust-analyzer` |
+| `bashls` | Bash / Shell | `bash-language-server` |
+| `copilot` | GitHub Copilot inline completion | `copilot-language-server` |
 
-通过 `:Mason` 命令打开安装界面，按 `i` 安装对应 server。
+列表由 `lua/plugins/lsp.lua` 顶部的 `servers` table 单一驱动。手动管理可用 `:Mason` 界面按 `i` 安装。
 
 ## Tmux 配置
 

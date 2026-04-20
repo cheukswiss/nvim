@@ -1,5 +1,16 @@
+-- server 名 (lspconfig) -> Mason 包名，避免两处手动同步
+local servers = {
+  lua_ls = "lua-language-server",
+  pyright = "pyright",
+  gopls = "gopls",
+  ts_ls = "typescript-language-server",
+  clangd = "clangd",
+  rust_analyzer = "rust-analyzer",
+  bashls = "bash-language-server",
+  copilot = "copilot-language-server",
+}
+
 return {
-  -- nvim-lint: 异步 linter 集成（补充 LSP 诊断覆盖不到的检查）
   {
     "mfussenegger/nvim-lint",
     event = { "BufReadPost", "BufWritePost" },
@@ -24,7 +35,16 @@ return {
     end,
   },
 
-  -- mason: LSP server 自动安装管理
+  {
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+      },
+    },
+  },
+
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
@@ -33,36 +53,26 @@ return {
     end,
   },
 
-  -- mason-lspconfig: mason 与 lspconfig 桥接
   {
-    "williamboman/mason-lspconfig.nvim",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
     dependencies = { "williamboman/mason.nvim" },
+    event = "VeryLazy",
     config = function()
-      require("mason-lspconfig").setup({
-        ensure_installed = {
-          "lua_ls",
-          "pyright",
-          "gopls",
-          "ts_ls",
-          "clangd",
-          "rust_analyzer",
-          "bashls",
-        },
+      require("mason-tool-installer").setup({
+        ensure_installed = vim.tbl_values(servers),
+        run_on_start = true,
       })
     end,
   },
 
-  -- lspconfig: 提供 LSP server 配置定义
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-      "hrsh7th/cmp-nvim-lsp",
+      "saghen/blink.cmp",
     },
     config = function()
-      -- 诊断外观
       vim.diagnostic.config({
         virtual_text = {
           prefix = "●",
@@ -73,38 +83,41 @@ return {
         underline = true,
         update_in_insert = false,
         severity_sort = true,
-        float = {
-          border = "rounded",
-          source = "if_many",
-          header = "",
-          prefix = "",
-        },
+        float = { source = "if_many", header = "", prefix = "" },
+        jump = { float = true },
       })
 
-      -- LSP 快捷键（在 LSP attach 时绑定）
-      -- 悬浮窗的圆角边框通过 hover/signature_help 的 config 参数传入
-      -- （vim.lsp.handlers[...] = vim.lsp.with(...) 在 0.11+ 已废弃）
       vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("user_lsp_attach", { clear = true }),
         callback = function(event)
-          local opts = { buffer = event.buf, silent = true }
-          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-          vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-          vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, opts)
-          vim.keymap.set("n", "gk", function() vim.lsp.buf.hover({ border = "rounded" }) end, opts)
-          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-          vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-          vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+          local function map(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, silent = true, desc = desc })
+          end
+
+          map("n", "gd", vim.lsp.buf.definition, "Go to definition")
+          map("n", "gk", vim.lsp.buf.hover, "Hover")
+          map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
+          map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
+          map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, "Prev diagnostic")
+          map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic")
+
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          if
+            client
+            and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlineCompletion, event.buf)
+          then
+            vim.lsp.inline_completion.enable(true, { bufnr = event.buf })
+            map("i", "<C-l>", vim.lsp.inline_completion.get, "Accept inline completion")
+            map("i", "<M-]>", function() vim.lsp.inline_completion.select({ count = 1 }) end, "Next inline completion")
+            map("i", "<M-[>", function() vim.lsp.inline_completion.select({ count = -1 }) end, "Prev inline completion")
+          end
         end,
       })
 
-      -- 全局 LSP capabilities（补全支持）
       vim.lsp.config("*", {
-        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        capabilities = require("blink.cmp").get_lsp_capabilities(),
       })
 
-      -- lua_ls 特殊配置
       vim.lsp.config("lua_ls", {
         settings = {
           Lua = {
@@ -113,16 +126,7 @@ return {
         },
       })
 
-      -- 启用 LSP server
-      vim.lsp.enable({
-        "lua_ls",
-        "pyright",
-        "gopls",
-        "ts_ls",
-        "clangd",
-        "rust_analyzer",
-        "bashls",
-      })
+      vim.lsp.enable(vim.tbl_keys(servers))
     end,
   },
 }

@@ -11,6 +11,7 @@ opt.wrap = true
 opt.showcmd = true
 opt.wildmenu = true
 opt.signcolumn = "yes"     -- 符号栏常驻，避免行号跳动
+opt.winborder = "rounded"  -- 浮动窗口默认圆角边框（LSP hover、诊断浮窗等统一）
 
 -- 搜索设置
 opt.hlsearch = true
@@ -61,9 +62,10 @@ vim.fn.mkdir(undodir, "p")
 opt.undofile = true
 opt.undodir = undodir
 
--- 折叠设置（treesitter 表达式折叠，按语法块折叠）
+-- 折叠设置
 opt.foldmethod = "expr"
 opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldtext = "v:lua.vim.treesitter.foldtext()"
 opt.foldlevel = 99
 
 -- 工作目录设置（关闭自动 cd，避免 telescope/nvim-tree 根目录漂移）

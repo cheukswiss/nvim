@@ -1,47 +1,32 @@
 return {
-  -- treesitter 语法高亮
   {
     "nvim-treesitter/nvim-treesitter",
-    -- 锁定 master 分支（main 分支是新重写版，API 不同且尚在开发中）
-    branch = "master",
+    branch = "main",
+    lazy = false,
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
     config = function()
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = {
-          "bash",
-          "c",
-          "go",
-          "html",
-          "javascript",
-          "json",
-          "lua",
-          "markdown",
-          "markdown_inline",
-          "python",
-          "regex",
-          "tsx",
-          "typescript",
-          "vim",
-          "vimdoc",
-          "yaml",
-        },
-        auto_install = true,
-        highlight = {
-          enable = true,
-          additional_vim_regex_highlighting = false,
-        },
-        -- treesitter indent 仍是 experimental，改用 Neovim 内置 ftplugin 的 indent
-        indent = { enable = false },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = "<C-space>",
-            node_incremental = "<C-space>",
-            scope_incremental = false,
-            node_decremental = "<bs>",
-          },
-        },
+      local ts = require("nvim-treesitter")
+      local parsers = {
+        "bash", "c", "go", "html", "javascript", "json", "lua",
+        "markdown", "markdown_inline", "python", "regex", "tsx",
+        "typescript", "vim", "vimdoc", "yaml",
+      }
+      local installed = ts.get_installed()
+      local missing = vim.tbl_filter(function(p)
+        return not vim.list_contains(installed, p)
+      end, parsers)
+      if #missing > 0 then
+        ts.install(missing)
+      end
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("user_ts_start", { clear = true }),
+        callback = function(args)
+          if vim.treesitter.highlighter.active[args.buf] then
+            return
+          end
+          pcall(vim.treesitter.start, args.buf)
+        end,
       })
     end,
   },
