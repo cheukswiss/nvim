@@ -1,4 +1,11 @@
 return {
+  -- GitHub Copilot
+  {
+    "github/copilot.vim",
+    event = "InsertEnter",
+    cmd = "Copilot",
+  },
+
   -- nvim-cmp: 代码补全
   {
     "hrsh7th/nvim-cmp",
