@@ -126,7 +126,23 @@ return {
         },
       })
 
-      vim.lsp.enable(vim.tbl_keys(servers))
+      -- 只 enable 二进制已在 PATH 的 server，避免首次启动时 mason 还在下载 copilot-language-server 等
+      local function enable_available()
+        local available = {}
+        for name, pkg in pairs(servers) do
+          if vim.fn.executable(pkg) == 1 then
+            table.insert(available, name)
+          end
+        end
+        vim.lsp.enable(available)
+      end
+      enable_available()
+
+      -- mason 首次补齐后再 enable 漏网的
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "MasonToolsUpdateCompleted",
+        callback = enable_available,
+      })
     end,
   },
 }

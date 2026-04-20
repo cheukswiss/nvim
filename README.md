@@ -15,13 +15,15 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 可选模块：`deps`（系统依赖）、`tmux`、`zsh`、`linters`。
 
 安装脚本会自动完成：
-- 检查并安装系统依赖（tmux、xclip/pbcopy、eza、yazi）
+- 检查并安装系统依赖（tmux、xclip/pbcopy、eza、yazi、glow、tree-sitter-cli）
 - 创建 `~/.tmux.conf` → `tmux.conf` 符号链接
 - 在 `~/.zshrc` 末尾追加 `source zsh_custom.zsh`
 - 安装 oh-my-zsh 插件（zsh-syntax-highlighting）
 - 安装 TPM（tmux 插件管理器）
 - 部署自定义 tmux2k 插件（host 状态栏等）
 - 安装 linters（shellcheck、cppcheck、ruff、golangci-lint、eslint_d）
+
+> **注意**：`nvim-treesitter` 已切到 main 分支（Neovim 0.12+ 原生栈），依赖系统级 `tree-sitter` CLI 编译 parser。`install.sh deps` 会通过 `npm -g tree-sitter-cli` 自动装好；未安装时打开任何源码文件都会报 `Error during "tree-sitter build"`。
 
 ## 目录结构
 
@@ -77,7 +79,7 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | 浮动终端 |
 | [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d 等） |
 
-GitHub Copilot 通过 [`copilot-language-server`](https://www.npmjs.com/package/@github/copilot-language-server)（由 Mason 安装）以原生 LSP `inline_completion` 接入，无需第三方 Vim 插件。首次使用在任意源文件运行 `:LspCopilotSignIn` 完成授权。
+GitHub Copilot 通过 [`copilot-language-server`](https://www.npmjs.com/package/@github/copilot-language-server)（由 Mason 安装）以原生 LSP `inline_completion` 接入，无需第三方 Vim 插件。首次使用时 Mason 会在后台下载二进制——下载完成后打开任意源文件使 copilot 客户端 attach，然后在该 buffer 内运行 `:LspCopilotSignIn` 完成授权（命令为 buffer-local，attach 前不可见）。
 
 ## 快捷键
 
@@ -241,7 +243,6 @@ Neovim 0.11+ 内置 LSP 默认映射（无需配置即可使用）：
 
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
-| `K` | Normal | 悬浮文档（与 `gk` 等效） |
 | `grn` | Normal | 重命名 |
 | `gra` | Normal / Visual | 代码操作 |
 | `grr` | Normal | 查看引用 |
@@ -249,6 +250,8 @@ Neovim 0.11+ 内置 LSP 默认映射（无需配置即可使用）：
 | `grt` | Normal | 跳转类型定义 |
 | `gO` | Normal | 文档符号列表 |
 | `<C-S>` | Insert | 签名帮助 |
+
+> 注：Neovim 默认的 `K` 悬浮已被本配置（`keymaps.lua`）覆盖为"上移 5 行"，请使用 `gk` 触发 hover。
 
 ### Copilot (LSP inline completion)
 

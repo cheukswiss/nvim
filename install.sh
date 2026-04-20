@@ -12,7 +12,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ZSHRC="$HOME/.zshrc"
 TMUX_CONF="$HOME/.tmux.conf"
 TPM_DIR="$HOME/.tmux/plugins/tpm"
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+# 独立目录，不强依赖 oh-my-zsh；zsh_custom.zsh 会 source 这里的插件
+ZSH_PLUGIN_DIR="$HOME/.zsh/plugins"
 
 # ── 平台检测 ────────────────────────────────
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -27,6 +28,8 @@ fi
 
 CARGO_DEPS=(eza yazi)
 GO_DEPS=("glow github.com/charmbracelet/glow@latest")
+# nvim-treesitter main 分支用 `tree-sitter build` 编译 parser，必须装 CLI
+NPM_DEPS=("tree-sitter-cli tree-sitter")
 LINTERS=(shellcheck cppcheck)
 CUSTOM_LINTERS=(golangci-lint ruff)
 NPM_LINTERS=(eslint_d)
@@ -43,10 +46,11 @@ err()   { echo -e "${RED}[ERR]${RESET} $1"; }
 # ── 状态检测函数 ────────────────────────────
 
 deps_status() {
-  local installed=0 total=$(( ${#DEPS[@]} + ${#CARGO_DEPS[@]} + ${#GO_DEPS[@]} )) missing_list=()
+  local installed=0 total=$(( ${#DEPS[@]} + ${#CARGO_DEPS[@]} + ${#GO_DEPS[@]} + ${#NPM_DEPS[@]} )) missing_list=()
   local all_cmds=()
   for cmd in "${DEPS[@]}" "${CARGO_DEPS[@]}"; do all_cmds+=("$cmd"); done
   for entry in "${GO_DEPS[@]}"; do all_cmds+=("${entry%% *}"); done
+  for entry in "${NPM_DEPS[@]}"; do all_cmds+=("${entry##* }"); done
   for cmd in "${all_cmds[@]}"; do
     if command -v "$cmd" &>/dev/null; then
       installed=$((installed + 1))
@@ -86,7 +90,7 @@ zsh_status() {
     ok=$((ok + 1))
   fi
   # 检查 zsh-syntax-highlighting
-  if [ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
+  if [ -d "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting" ]; then
     ok=$((ok + 1))
   fi
   if (( ok == total )); then echo "done"
@@ -154,6 +158,28 @@ confirm_install() {
     fi
   fi
   "$@"
+}
+
+# install_npm_global <pkg...> - 批量 npm -g 安装，自动避免系统 prefix 要 sudo
+install_npm_global() {
+  (( $# == 0 )) && return 0
+  if ! command -v npm &>/dev/null; then
+    warn "npm 未安装，跳过 $*"
+    return
+  fi
+  local npm_prefix npm_cmd=(npm install -g)
+  npm_prefix="$(npm config get prefix 2>/dev/null)"
+  if [[ "$npm_prefix" == /usr* && "$(uname)" != "Darwin" ]]; then
+    mkdir -p "$HOME/.local"
+    npm_cmd=(npm install -g --prefix "$HOME/.local")
+  fi
+  local rc=0
+  confirm_install "${npm_cmd[*]} $*" "${npm_cmd[@]}" "$@" || rc=$?
+  if [[ $rc -eq 0 ]]; then
+    info "npm 包安装完成: $*"
+  elif [[ $rc -ne 1 ]]; then
+    err "npm 包安装失败: $*"
+  fi
 }
 
 # ── 安装函数 ────────────────────────────────
@@ -229,6 +255,17 @@ install_deps() {
       fi
     fi
   done
+
+  local npm_missing=()
+  for entry in "${NPM_DEPS[@]}"; do
+    local pkg="${entry%% *}" bin="${entry##* }"
+    if command -v "$bin" &>/dev/null; then
+      skip "$bin 已安装"
+    else
+      npm_missing+=("$pkg")
+    fi
+  done
+  install_npm_global "${npm_missing[@]}"
 }
 
 install_tmux() {
@@ -239,9 +276,10 @@ install_tmux() {
   if [ -L "$TMUX_CONF" ] && [ "$(readlink "$TMUX_CONF")" = "$SCRIPT_DIR/tmux.conf" ]; then
     skip "tmux.conf 符号链接已存在"
   elif [ -e "$TMUX_CONF" ]; then
-    mv "$TMUX_CONF" "$TMUX_CONF.bak"
+    local backup="$TMUX_CONF.bak.$(date +%Y%m%d%H%M%S)"
+    mv "$TMUX_CONF" "$backup"
     ln -s "$SCRIPT_DIR/tmux.conf" "$TMUX_CONF"
-    info "tmux.conf 已备份为 .tmux.conf.bak 并创建符号链接"
+    info "tmux.conf 已备份为 $backup 并创建符号链接"
   else
     ln -s "$SCRIPT_DIR/tmux.conf" "$TMUX_CONF"
     info "tmux.conf 符号链接已创建"
@@ -281,12 +319,13 @@ install_zsh() {
     warn "未找到 ~/.zshrc，请手动添加: $SOURCE_LINE"
   fi
 
-  # oh-my-zsh 插件
-  if [ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
+  # zsh 插件（独立目录，由 zsh_custom.zsh 直接 source，不依赖 oh-my-zsh）
+  if [ -d "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting" ]; then
     skip "zsh-syntax-highlighting 已安装"
   else
+    mkdir -p "$ZSH_PLUGIN_DIR"
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-      "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+      "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
     info "zsh-syntax-highlighting 已安装"
   fi
 }
@@ -359,7 +398,6 @@ install_linters() {
     fi
   fi
 
-  # npm linters（优先用户目录安装）
   local npm_missing=()
   for cmd in "${NPM_LINTERS[@]}"; do
     if command -v "$cmd" &>/dev/null; then
@@ -368,30 +406,7 @@ install_linters() {
       npm_missing+=("$cmd")
     fi
   done
-  if [ ${#npm_missing[@]} -gt 0 ]; then
-    if ! command -v npm &>/dev/null; then
-      warn "npm 未安装，跳过 ${npm_missing[*]}"
-      return
-    fi
-    # 检测 npm prefix 是否需要 sudo
-    local npm_prefix
-    npm_prefix="$(npm config get prefix 2>/dev/null)"
-    local npm_cmd=(npm install -g)
-    if [[ "$npm_prefix" == /usr* ]] && [[ "$(uname)" != "Darwin" ]]; then
-      # 系统级 prefix，设置用户目录避免 sudo
-      mkdir -p "$HOME/.local"
-      npm_cmd=(npm install -g --prefix "$HOME/.local")
-    fi
-    local rc=0
-    confirm_install "${npm_cmd[*]} ${npm_missing[*]}" \
-      "${npm_cmd[@]}" "${npm_missing[@]}" \
-      || rc=$?
-    if [[ $rc -eq 0 ]]; then
-      info "npm linters 安装完成"
-    elif [[ $rc -ne 1 ]]; then
-      err "npm linters 安装失败"
-    fi
-  fi
+  install_npm_global "${npm_missing[@]}"
 }
 
 # ── 交互菜单 ────────────────────────────────
