@@ -169,36 +169,4 @@ return {
       },
     },
   },
-
-  -- 浮动终端
-  {
-    "akinsho/toggleterm.nvim",
-    version = "*",
-    keys = {
-      {
-        "<A-\\>",
-        function() vim.cmd(vim.v.count1 .. "ToggleTerm direction=float") end,
-        desc = "Toggle float terminal (count = id)",
-      },
-      {
-        "<A-\\>",
-        [[<C-\><C-n><cmd>ToggleTerm<cr>]],
-        mode = "t",
-        desc = "Hide float terminal",
-      },
-      { "<leader>tl", "<cmd>TermSelect<cr>", desc = "Select terminal" },
-    },
-    config = function()
-      require("toggleterm").setup({
-        direction = "float",
-        float_opts = {
-          border = "curved",
-        },
-        highlights = {
-          Normal = { guibg = '#0C0C0C', guifg = '#CCCCCC' },
-          NormalFloat = { guibg = '#0C0C0C', guifg = '#CCCCCC' },
-        },
-      })
-    end,
-  },
 }

@@ -39,11 +39,6 @@ function t() {
   tmux attach -t "$session" 2>/dev/null || tmux new -s "$session"
 }
 
-# ── 自动进入 tmux（SSH 会话跳过）──
-if command -v tmux &>/dev/null && [ -z "$SSH_CONNECTION" ]; then
-  t main
-fi
-
 # Yazi 文件管理器
 function y() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd

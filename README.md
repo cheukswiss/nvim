@@ -43,7 +43,7 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 │   │   └── lazy.lua          # lazy.nvim 插件管理器配置
 │   └── plugins/
 │       ├── ui.lua            # 界面插件 (主题/状态栏/bufferline)
-│       ├── editor.lua        # 编辑器插件 (treesitter/telescope/flash/toggleterm...)
+│       ├── editor.lua        # 编辑器插件 (treesitter/telescope/flash...)
 │       ├── lsp.lua           # LSP + linter 插件
 │       ├── completion.lua    # 代码补全
 │       └── git.lua           # Git 集成
@@ -76,7 +76,6 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) | 安全关闭 Buffer |
 | [which-key.nvim](https://github.com/folke/which-key.nvim) | 快捷键提示 |
 | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | 缩进参考线 |
-| [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | 浮动终端 |
 | [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d 等） |
 
 GitHub Copilot 通过 [`copilot-language-server`](https://www.npmjs.com/package/@github/copilot-language-server)（由 Mason 安装）以原生 LSP `inline_completion` 接入，无需第三方 Vim 插件。首次使用时 Mason 会在后台下载二进制——下载完成后打开任意源文件使 copilot 客户端 attach，然后在该 buffer 内运行 `:LspCopilotSignIn` 完成授权（命令为 buffer-local，attach 前不可见）。
@@ -139,12 +138,6 @@ Leader 键为 `Space`。
 | `<A-1>` ~ `<A-9>` | Normal | 跳转到第 N 个 Buffer |
 | `<leader>bc` | Normal | 关闭当前 Buffer |
 | `<leader>bo` | Normal | 关闭其他 Buffer |
-
-### 终端
-
-| 快捷键 | 模式 | 功能 |
-|--------|------|------|
-| `<A-\>` | Normal/Terminal | 唤起/关闭浮动终端 |
 
 ### 会话管理
 
@@ -315,7 +308,7 @@ Copilot 以 `copilot-language-server` 形式通过原生 `vim.lsp.inline_complet
 | `Alt-W` | 关闭面板（最后一个面板时确认退出） |
 | `Alt-Q` | 确认退出 tmux |
 | `Alt-B` | 分离 tmux |
-| `Alt-\` | 浮动终端（nvim 内透传给 nvim，再按关闭，scratch 会话持久化） |
+| `Alt-\` | 浮动终端（再按关闭，scratch 会话持久化） |
 | `Alt-g` | lazygit 浮动窗口 |
 | `Alt-f` | tmux-thumbs 快速复制（标签标记屏幕文本） |
 | `前缀 + r` | 重载配置 |
