@@ -20,14 +20,25 @@ map("i", "jj", "<ESC>")
 -- 增强移动键（normal + visual；x 模式不影响 operator-pending，如 dH 仍可用）
 map({ "n", "x" }, "J", "5j")
 map({ "n", "x" }, "K", "5k")
-map({ "n", "x" }, "H", "5h")
-map({ "n", "x" }, "L", "5l")
+map({ "n", "x" }, "H", "0")
+map({ "n", "x" }, "L", "$")
 
 -- leader+; 进入命令模式
 map("n", "<leader>;", ":")
 
 -- 取消搜索高亮
 map("n", "<leader><CR>", ":nohlsearch<CR>")
+
+-- * 原地高亮光标下的词：只设搜索高亮、光标不动（之后用 n/N 跳转）
+map("n", "*", function()
+    local cword = vim.fn.expand("<cword>")
+    if cword == "" then
+        return
+    end
+    vim.fn.setreg("/", "\\<" .. vim.fn.escape(cword, "\\/") .. "\\>")
+    vim.opt.hlsearch = true
+    vim.fn.histadd("/", vim.fn.getreg("/"))
+end, { desc = "Highlight word under cursor" })
 
 -- 16进制编辑
 map("n", "<leader>xd", ":%!xxd<CR>")
