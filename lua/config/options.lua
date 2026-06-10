@@ -74,6 +74,28 @@ opt.autochdir = false
 -- 剪贴板设置（使用系统剪贴板 + 寄存器）
 opt.clipboard = "unnamedplus"
 
+-- WSL：用 win32yank.exe 桥接 Windows 剪贴板
+-- exe 随本仓库分发（stdpath("config")/win32yank.exe），不依赖 PATH；
+-- 命令用列表形式（不过 shell，路径含空格也安全）。
+-- 仅在 WSL 且 exe 可执行时启用，避免污染原生 Linux / macOS 的 provider。
+if vim.fn.has("wsl") == 1 then
+  local win32yank = vim.fn.stdpath("config") .. "/bin/win32yank.exe"
+  if vim.fn.executable(win32yank) == 1 then
+    vim.g.clipboard = {
+      name = "win32yank-wsl",
+      copy = {
+        ["+"] = { win32yank, "-i", "--crlf" },
+        ["*"] = { win32yank, "-i", "--crlf" },
+      },
+      paste = {
+        ["+"] = { win32yank, "-o", "--lf" },
+        ["*"] = { win32yank, "-o", "--lf" },
+      },
+      cache_enabled = 0,  -- win32yank 无 owner 概念，关缓存（官方推荐）
+    }
+  end
+end
+
 -- 终端配色（Campbell，与 Windows Terminal 一致）
 -- 在 colorscheme 加载后覆盖，防止主题插件覆盖
 vim.api.nvim_create_autocmd("ColorScheme", {
