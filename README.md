@@ -326,6 +326,8 @@ VS Code 侧需在 settings.json 配置（无法随本仓库分发）：
 | 快捷键 | 功能 |
 |--------|------|
 | `Alt-h/j/k/l` | 面板导航（无需前缀） |
+| `Alt-z` | 缩放当前面板（无需前缀） |
+| `Alt-s` | 会话树切换（无需前缀） |
 | `Alt-Shift-H/J/K/L` | 调整面板大小（无需前缀） |
 | `Alt-I` | 垂直分屏 |
 | `Alt-V` | 水平分屏 |
@@ -342,7 +344,7 @@ VS Code 侧需在 settings.json 配置（无法随本仓库分发）：
 | `前缀 + Esc` | 进入复制模式 |
 | `前缀 + P` | 粘贴 |
 
-复制模式使用 Vi 键位：`v` 选择，`y` / `Enter` / 鼠标释放即复制并退出（自动写入系统剪贴板），滚轮每次 1 行。
+复制模式使用 Vi 键位：`v` 选择，`y` / `Enter` / 鼠标释放即复制并退出（自动写入系统剪贴板），滚轮每次 3 行。
 
 ### Tmux 插件
 
@@ -351,7 +353,7 @@ VS Code 侧需在 settings.json 配置（无法随本仓库分发）：
 | tmux-sensible | 合理默认值 |
 | tmux-resurrect | 会话保存/恢复 |
 | tmux-continuum | 自动保存（15 分钟间隔） |
-| tmux2k | 状态栏主题（置顶，显示 session/git/cwd/host/cpu/ram/network/time） |
+| tmux2k | 状态栏主题（置顶，显示 session/cwd + host/cpu/ram 等，按平台略有差异） |
 | tmux-thumbs | 快速复制屏幕文本（URL/路径/git hash/IP 地址） |
 
 ## ZSH 自定义配置

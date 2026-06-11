@@ -117,9 +117,9 @@ map("n", "<right>", ":vertical resize+5<CR>")
 map("n", "sma", ":set mouse=a<CR>")   -- 启用鼠标
 map("n", "smc", ":set mouse=<CR>")    -- 禁用鼠标（便于终端原生选中复制）
 
--- 会话保存和加载
-map("n", "sms", ":mksession ./.session.vim<CR>")
-map("n", "sls", ":source ./.session.vim<CR>")
+-- 会话保存和加载（文件名用 Session.vim：tmux-resurrect 恢复 nvim 时按此约定 -S 加载）
+map("n", "sms", ":mksession! ./Session.vim<CR>")
+map("n", "sls", ":source ./Session.vim<CR>")
 
 -- =========================
 --         Buffer 操作
