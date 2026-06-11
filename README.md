@@ -15,7 +15,7 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 可选模块：`deps`（系统依赖）、`tmux`、`zsh`、`linters`。
 
 安装脚本会自动完成：
-- 检查并安装系统依赖（tmux、xclip/pbcopy、eza、yazi、glow、tree-sitter-cli）
+- 检查并安装系统依赖（tmux、xclip/pbcopy、ripgrep、fd、eza、yazi、glow、tree-sitter-cli）
 - 创建 `~/.tmux.conf` → `tmux.conf` 符号链接
 - 在 `~/.zshrc` 末尾追加 `source zsh_custom.zsh`
 - 安装 oh-my-zsh 插件（zsh-syntax-highlighting）

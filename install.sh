@@ -16,14 +16,16 @@ TPM_DIR="$HOME/.tmux/plugins/tpm"
 ZSH_PLUGIN_DIR="$HOME/.zsh/plugins"
 
 # ── 平台检测 ────────────────────────────────
+# DEPS 条目格式: "<包名> <命令名>"（ripgrep/fd 的包名与二进制名不一致）
+# ripgrep/fd 是 telescope live_grep / find_files 的运行时依赖
 if [[ "$(uname)" == "Darwin" ]]; then
   PLATFORM="macOS"
   PKG_CMD=(brew install)
-  DEPS=(tmux)
+  DEPS=("tmux tmux" "ripgrep rg" "fd fd")
 else
   PLATFORM="Linux"
   PKG_CMD=(sudo apt install -y)
-  DEPS=(tmux xclip)
+  DEPS=("tmux tmux" "xclip xclip" "ripgrep rg" "fd-find fdfind")
 fi
 
 CARGO_DEPS=(eza yazi)
@@ -45,13 +47,19 @@ err()   { echo -e "${RED}[ERR]${RESET} $1"; }
 
 # ── 状态检测函数 ────────────────────────────
 
-deps_status() {
-  local installed=0 total=$(( ${#DEPS[@]} + ${#CARGO_DEPS[@]} + ${#GO_DEPS[@]} + ${#NPM_DEPS[@]} )) missing_list=()
-  local all_cmds=()
-  for cmd in "${DEPS[@]}" "${CARGO_DEPS[@]}"; do all_cmds+=("$cmd"); done
-  for entry in "${GO_DEPS[@]}"; do all_cmds+=("${entry%% *}"); done
-  for entry in "${NPM_DEPS[@]}"; do all_cmds+=("${entry##* }"); done
-  for cmd in "${all_cmds[@]}"; do
+# dep_bins - 输出 deps 模块全部依赖对应的命令名（每行一个）
+# "<包名> <命令名>" 格式条目取命令名；GO_DEPS 取首字段；CARGO_DEPS 即命令名
+dep_bins() {
+  local entry
+  for entry in "${DEPS[@]}" "${NPM_DEPS[@]}"; do echo "${entry##* }"; done
+  for entry in "${CARGO_DEPS[@]}"; do echo "$entry"; done
+  for entry in "${GO_DEPS[@]}"; do echo "${entry%% *}"; done
+}
+
+# cmds_status <cmd...> - 按命令存在性输出 done / none|缺失 / partial|n/m|缺失
+cmds_status() {
+  local installed=0 total=$# missing_list=() cmd
+  for cmd in "$@"; do
     if command -v "$cmd" &>/dev/null; then
       installed=$((installed + 1))
     else
@@ -65,6 +73,15 @@ deps_status() {
   else
     echo "partial|$installed/$total|${missing_list[*]}"
   fi
+}
+
+deps_status() {
+  # shellcheck disable=SC2046  # dep_bins 输出无空格，依赖分词展开
+  cmds_status $(dep_bins)
+}
+
+linters_status() {
+  cmds_status "${LINTERS[@]}" "${CUSTOM_LINTERS[@]}" "${NPM_LINTERS[@]}"
 }
 
 tmux_status() {
@@ -99,24 +116,6 @@ zsh_status() {
   fi
 }
 
-linters_status() {
-  local installed=0 total=$(( ${#LINTERS[@]} + ${#CUSTOM_LINTERS[@]} + ${#NPM_LINTERS[@]} )) missing_list=()
-  for cmd in "${LINTERS[@]}" "${CUSTOM_LINTERS[@]}" "${NPM_LINTERS[@]}"; do
-    if command -v "$cmd" &>/dev/null; then
-      installed=$((installed + 1))
-    else
-      missing_list+=("$cmd")
-    fi
-  done
-  if (( installed == total )); then
-    echo "done"
-  elif (( installed == 0 )); then
-    echo "none|${missing_list[*]}"
-  else
-    echo "partial|$installed/$total|${missing_list[*]}"
-  fi
-}
-
 # ── 格式化状态显示 ──────────────────────────
 
 format_status() {
@@ -145,7 +144,9 @@ format_status() {
 
 # ── 通用确认安装 ────────────────────────────
 # confirm_install <描述> <命令...>
-# 返回值: 0=已执行, 1=用户跳过
+# 返回值: 0=成功, SKIP_RC=用户跳过, 其余=命令失败的退出码
+# 跳过用专用码，避免与命令本身的 exit 1 混淆（否则失败被当跳过静默吞掉）
+SKIP_RC=200
 confirm_install() {
   local desc="$1"; shift
   echo -e "将执行: ${CYAN}${desc}${RESET}"
@@ -154,10 +155,29 @@ confirm_install() {
     read -rp "确认安装？[Y/n] " ans
     if [[ "$ans" =~ ^[Nn]$ ]]; then
       skip "跳过 $desc"
-      return 1
+      return "$SKIP_RC"
     fi
   fi
   "$@"
+}
+
+# run_install <描述> <成功消息> <命令...> - 确认后执行并统一报告结果
+run_install() {
+  local desc="$1" success="$2"; shift 2
+  local rc=0
+  confirm_install "$desc" "$@" || rc=$?
+  if [[ $rc -eq 0 ]]; then
+    info "$success"
+  elif [[ $rc -ne $SKIP_RC ]]; then  # 跳过时 confirm_install 已输出提示
+    err "$desc 失败 (exit $rc)"
+  fi
+}
+
+# install_pkgs <标签> <pkg...> - 系统包管理器（apt/brew）批量安装
+install_pkgs() {
+  local label="$1"; shift
+  (( $# == 0 )) && return 0
+  run_install "${PKG_CMD[*]} $*" "$label 安装完成" "${PKG_CMD[@]}" "$@"
 }
 
 # install_npm_global <pkg...> - 批量 npm -g 安装，自动避免系统 prefix 要 sudo
@@ -173,13 +193,7 @@ install_npm_global() {
     mkdir -p "$HOME/.local"
     npm_cmd=(npm install -g --prefix "$HOME/.local")
   fi
-  local rc=0
-  confirm_install "${npm_cmd[*]} $*" "${npm_cmd[@]}" "$@" || rc=$?
-  if [[ $rc -eq 0 ]]; then
-    info "npm 包安装完成: $*"
-  elif [[ $rc -ne 1 ]]; then
-    err "npm 包安装失败: $*"
-  fi
+  run_install "${npm_cmd[*]} $*" "npm 包安装完成: $*" "${npm_cmd[@]}" "$@"
 }
 
 # ── 安装函数 ────────────────────────────────
@@ -188,50 +202,30 @@ install_deps() {
   echo ""
   echo -e "${BOLD}── 安装系统依赖 ──${RESET}"
   local missing=()
-  for cmd in "${DEPS[@]}"; do
-    if command -v "$cmd" &>/dev/null; then
-      skip "$cmd 已安装"
+  for entry in "${DEPS[@]}"; do
+    local pkg="${entry%% *}" bin="${entry##* }"
+    if command -v "$bin" &>/dev/null; then
+      skip "$bin 已安装"
     else
-      missing+=("$cmd")
+      missing+=("$pkg")
     fi
   done
-  if [ ${#missing[@]} -gt 0 ]; then
-    echo ""
-    echo -e "将执行: ${CYAN}${PKG_CMD[*]} ${missing[*]}${RESET}"
-    if [[ "${AUTO_INSTALL:-}" != "1" ]]; then
-      read -rp "确认安装？[Y/n] " ans
-      [[ "$ans" =~ ^[Nn]$ ]] && { skip "跳过系统依赖"; missing=(); }
-    fi
-    if [ ${#missing[@]} -gt 0 ]; then
-      if "${PKG_CMD[@]}" "${missing[@]}"; then
-        info "系统依赖安装完成"
-      else
-        err "部分系统依赖安装失败"
-      fi
-    fi
-  fi
+  install_pkgs "系统依赖" "${missing[@]}"
 
   # cargo 依赖（yazi 等不在 apt 仓库的工具）
   for cmd in "${CARGO_DEPS[@]}"; do
     if command -v "$cmd" &>/dev/null; then
       skip "$cmd 已安装"
-    else
-      if ! command -v cargo &>/dev/null; then
-        warn "cargo 未安装，跳过 $cmd（请先安装 Rust: https://rustup.rs）"
-        continue
-      fi
-      local cargo_pkg=("$cmd")
-      [[ "$cmd" == "yazi" ]] && cargo_pkg=(yazi-fm yazi-cli)
-      local rc=0
-      confirm_install "cargo install --locked ${cargo_pkg[*]}" \
-        cargo install --locked "${cargo_pkg[@]}" \
-        || rc=$?
-      if [[ $rc -eq 0 ]]; then
-        info "$cmd 安装完成"
-      elif [[ $rc -ne 1 ]]; then
-        err "$cmd 安装失败"
-      fi
+      continue
     fi
+    if ! command -v cargo &>/dev/null; then
+      warn "cargo 未安装，跳过 $cmd（请先安装 Rust: https://rustup.rs）"
+      continue
+    fi
+    local cargo_pkg=("$cmd")
+    [[ "$cmd" == "yazi" ]] && cargo_pkg=(yazi-fm yazi-cli)
+    run_install "cargo install --locked ${cargo_pkg[*]}" "$cmd 安装完成" \
+      cargo install --locked "${cargo_pkg[@]}"
   done
 
   # go 依赖（glow 等）
@@ -239,21 +233,13 @@ install_deps() {
     local cmd="${entry%% *}" pkg="${entry#* }"
     if command -v "$cmd" &>/dev/null; then
       skip "$cmd 已安装"
-    else
-      if ! command -v go &>/dev/null; then
-        warn "go 未安装，跳过 $cmd（请先安装 Go: https://go.dev/dl）"
-        continue
-      fi
-      local rc=0
-      confirm_install "go install $pkg" \
-        go install "$pkg" \
-        || rc=$?
-      if [[ $rc -eq 0 ]]; then
-        info "$cmd 安装完成"
-      elif [[ $rc -ne 1 ]]; then
-        err "$cmd 安装失败"
-      fi
+      continue
     fi
+    if ! command -v go &>/dev/null; then
+      warn "go 未安装，跳过 $cmd（请先安装 Go: https://go.dev/dl）"
+      continue
+    fi
+    run_install "go install $pkg" "$cmd 安装完成" go install "$pkg"
   done
 
   local npm_missing=()
@@ -276,7 +262,8 @@ install_tmux() {
   if [ -L "$TMUX_CONF" ] && [ "$(readlink "$TMUX_CONF")" = "$SCRIPT_DIR/tmux.conf" ]; then
     skip "tmux.conf 符号链接已存在"
   elif [ -e "$TMUX_CONF" ]; then
-    local backup="$TMUX_CONF.bak.$(date +%Y%m%d%H%M%S)"
+    local backup
+    backup="$TMUX_CONF.bak.$(date +%Y%m%d%H%M%S)"
     mv "$TMUX_CONF" "$backup"
     ln -s "$SCRIPT_DIR/tmux.conf" "$TMUX_CONF"
     info "tmux.conf 已备份为 $backup 并创建符号链接"
@@ -297,8 +284,12 @@ install_tmux() {
   local custom_dir="$SCRIPT_DIR/tmux2k-custom"
   local dest_dir="$HOME/.tmux/plugins/tmux2k/plugins"
   if [ -d "$custom_dir" ] && [ -d "$dest_dir" ]; then
-    cp "$custom_dir"/*.sh "$dest_dir/" 2>/dev/null
-    info "自定义 tmux2k 插件已部署"
+    if cp "$custom_dir"/*.sh "$dest_dir/" 2>/dev/null; then
+      info "自定义 tmux2k 插件已部署"
+    else
+      # set -e 下 cp 失败会静默中断脚本，这里显式兜底
+      warn "自定义 tmux2k 插件部署失败（检查 $custom_dir/*.sh 是否存在）"
+    fi
   fi
 }
 
@@ -343,36 +334,15 @@ install_linters() {
       pkg_missing+=("$cmd")
     fi
   done
-  if [ ${#pkg_missing[@]} -gt 0 ]; then
-    echo ""
-    echo -e "将执行: ${CYAN}${PKG_CMD[*]} ${pkg_missing[*]}${RESET}"
-    if [[ "${AUTO_INSTALL:-}" != "1" ]]; then
-      read -rp "确认安装？[Y/n] " ans
-      [[ "$ans" =~ ^[Nn]$ ]] && { skip "跳过 brew/apt linters"; pkg_missing=(); }
-    fi
-    if [ ${#pkg_missing[@]} -gt 0 ]; then
-      if "${PKG_CMD[@]}" "${pkg_missing[@]}"; then
-        info "Linters 安装完成"
-      else
-        err "部分 linters 安装失败"
-      fi
-    fi
-  fi
+  install_pkgs "Linters" "${pkg_missing[@]}"
 
   # golangci-lint（官方安装脚本）
   if command -v golangci-lint &>/dev/null; then
     skip "golangci-lint 已安装"
   else
     mkdir -p "$HOME/.local/bin"
-    local rc=0
-    confirm_install "curl 安装 golangci-lint 到 ~/.local/bin" \
-      bash -c 'curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b "$HOME/.local/bin"' \
-      || rc=$?
-    if [[ $rc -eq 0 ]]; then
-      info "golangci-lint 安装完成"
-    elif [[ $rc -ne 1 ]]; then
-      err "golangci-lint 安装失败"
-    fi
+    run_install "curl 安装 golangci-lint 到 ~/.local/bin" "golangci-lint 安装完成" \
+      bash -c 'curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b "$HOME/.local/bin"'
   fi
 
   # ruff（pipx 安装）
@@ -384,15 +354,7 @@ install_linters() {
       "${PKG_CMD[@]}" pipx || true
     fi
     if command -v pipx &>/dev/null; then
-      local rc=0
-      confirm_install "pipx install ruff" \
-        pipx install ruff \
-        || rc=$?
-      if [[ $rc -eq 0 ]]; then
-        info "ruff 安装完成"
-      elif [[ $rc -ne 1 ]]; then
-        err "ruff 安装失败"
-      fi
+      run_install "pipx install ruff" "ruff 安装完成" pipx install ruff
     else
       err "pipx 不可用，跳过 ruff"
     fi
