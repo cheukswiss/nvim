@@ -19,21 +19,26 @@ return {
         ts.install(missing)
       end
 
-      vim.api.nvim_create_autocmd("FileType", {
-        group = vim.api.nvim_create_augroup("user_ts_start", { clear = true }),
-        callback = function(args)
-          if vim.treesitter.highlighter.active[args.buf] then
-            return
-          end
-          pcall(vim.treesitter.start, args.buf)
-        end,
-      })
+      -- VS Code 下高亮由 VS Code 渲染，nvim 侧 highlighter 不可见，
+      -- 不启动以省 CPU（parser 仍保留，flash 的 treesitter 选区需要）
+      if not vim.g.vscode then
+        vim.api.nvim_create_autocmd("FileType", {
+          group = vim.api.nvim_create_augroup("user_ts_start", { clear = true }),
+          callback = function(args)
+            if vim.treesitter.highlighter.active[args.buf] then
+              return
+            end
+            pcall(vim.treesitter.start, args.buf)
+          end,
+        })
+      end
     end,
   },
 
   -- telescope 模糊搜索
   {
     "nvim-telescope/telescope.nvim",
+    cond = not vim.g.vscode,  -- VS Code 下用 quickOpen / findInFiles
     dependencies = {
       "nvim-lua/plenary.nvim",
       -- C 实现的 fzf 排序器，模糊匹配速度提升 10 倍+
@@ -86,6 +91,7 @@ return {
   -- nvim-tree 文件树
   {
     "nvim-tree/nvim-tree.lua",
+    cond = not vim.g.vscode,  -- VS Code 下用自带资源管理器
     dependencies = { "nvim-tree/nvim-web-devicons" },
     keys = {
       { "tt", "<cmd>NvimTreeToggle<cr>", desc = "Toggle file tree" },
@@ -99,6 +105,7 @@ return {
   -- 快捷键提示
   {
     "folke/which-key.nvim",
+    cond = not vim.g.vscode,  -- 浮窗 UI 在 VS Code 下无法渲染
     event = "VeryLazy",
     config = function()
       require("which-key").setup()
@@ -108,12 +115,14 @@ return {
   -- 安全关闭 buffer
   {
     "famiu/bufdelete.nvim",
+    cond = not vim.g.vscode,  -- buffer 管理交给 VS Code 编辑器标签
     cmd = { "Bdelete", "Bwipeout" },
   },
 
   -- 自动补全括号
   {
     "windwp/nvim-autopairs",
+    cond = not vim.g.vscode,  -- 插入模式由 VS Code 接管，自动配对用 VS Code 的
     event = "InsertEnter",
     config = function()
       require("nvim-autopairs").setup()

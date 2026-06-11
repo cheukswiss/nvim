@@ -1,3 +1,8 @@
+-- Markdown 预览/渲染用 VS Code 自带功能，vscode-neovim 下禁用
+if vim.g.vscode then
+  return {}
+end
+
 return {
   -- 终端内 Markdown 渲染（标题/表格/代码块/链接等直接在 buffer 中可视化）
   {

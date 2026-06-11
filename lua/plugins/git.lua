@@ -1,3 +1,8 @@
+-- git 状态/diff 由 VS Code 提供，vscode-neovim 下禁用
+if vim.g.vscode then
+  return {}
+end
+
 return {
   -- git 状态标记与 hunk 操作
   {

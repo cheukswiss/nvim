@@ -51,6 +51,41 @@ map("n", "Q", ":q<CR>")
 map("n", "E", ":e!<CR>")
 
 -- =========================
+--   VS Code（vscode-neovim）
+-- =========================
+-- 插入模式、UI、LSP 均由 VS Code 接管；这里只桥接需要的操作到
+-- VS Code action，然后提前返回，跳过下方纯 nvim 的窗口/Buffer/插件键位。
+if vim.g.vscode then
+    local vscode = require("vscode")
+    local function action(name)
+        return function() vscode.action(name) end
+    end
+
+    -- 覆盖上方共享键位：关闭/重载走 VS Code action，
+    -- :q/:e! 操作的是 nvim 隐藏 buffer，会与 VS Code 文档状态错位
+    map("n", "Q", action("workbench.action.closeActiveEditor"))
+    map("n", "E", action("workbench.action.files.revert"))
+
+    -- 窗口分割 / 跳转（<C-w> 系列 vscode-neovim 已桥接，这里补 leader 习惯键位）
+    map("n", "<leader>si", action("workbench.action.splitEditorRight"))
+    map("n", "<leader>sv", action("workbench.action.splitEditorDown"))
+    map("n", "<leader>h", action("workbench.action.navigateLeft"))
+    map("n", "<leader>j", action("workbench.action.navigateDown"))
+    map("n", "<leader>k", action("workbench.action.navigateUp"))
+    map("n", "<leader>l", action("workbench.action.navigateRight"))
+
+    -- 文件树 / 搜索，对应 nvim 下的 nvim-tree / telescope
+    map("n", "tt", action("workbench.view.explorer"))
+    map("n", "<leader>ff", action("workbench.action.quickOpen"))
+    map("n", "<leader>fg", action("workbench.action.findInFiles"))
+
+    -- 注释（对应 nvim 下的 Comment.nvim）
+    map({ "n", "x" }, "<C-/>", action("editor.action.commentLine"))
+
+    return
+end
+
+-- =========================
 --         窗口操作
 -- =========================
 

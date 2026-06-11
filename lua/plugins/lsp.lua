@@ -1,3 +1,8 @@
+-- LSP/诊断由 VS Code 提供，vscode-neovim 下全部禁用
+if vim.g.vscode then
+  return {}
+end
+
 -- server 名 (lspconfig) -> Mason 包名，避免两处手动同步
 local servers = {
   lua_ls = "lua-language-server",

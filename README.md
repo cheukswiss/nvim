@@ -46,6 +46,7 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 │       ├── editor.lua        # 编辑器插件 (treesitter/telescope/flash...)
 │       ├── lsp.lua           # LSP + linter 插件
 │       ├── completion.lua    # 代码补全
+│       ├── markdown.lua      # Markdown 渲染 / 预览
 │       └── git.lua           # Git 集成
 └── README.md
 ```
@@ -77,6 +78,8 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [which-key.nvim](https://github.com/folke/which-key.nvim) | 快捷键提示 |
 | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | 缩进参考线 |
 | [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d 等） |
+| [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | 终端内 Markdown 渲染 |
+| [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) | 浏览器 Markdown 预览 |
 
 GitHub Copilot 通过 [`copilot-language-server`](https://www.npmjs.com/package/@github/copilot-language-server)（由 Mason 安装）以原生 LSP `inline_completion` 接入，无需第三方 Vim 插件。首次使用时 Mason 会在后台下载二进制——下载完成后打开任意源文件使 copilot 客户端 attach，然后在该 buffer 内运行 `:LspCopilotSignIn` 完成授权（命令为 buffer-local，attach 前不可见）。
 
@@ -91,7 +94,7 @@ Leader 键为 `Space`。
 | `jj` | Insert | 退出插入模式 |
 | `S` | Normal | 保存文件 |
 | `Q` | Normal | 退出 |
-| `E` | Normal | 重新加载文件 |
+| `E` | Normal | 放弃修改并重载文件 |
 | `s` | Normal | 禁用（无操作） |
 | `<leader>;` | Normal | 进入命令模式（等同于 `:`) |
 
@@ -99,15 +102,16 @@ Leader 键为 `Space`。
 
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
-| `J` | Normal | 向下移动 5 行 |
-| `K` | Normal | 向上移动 5 行 |
-| `H` | Normal | 向左移动 5 列 |
-| `L` | Normal | 向右移动 5 列 |
+| `J` | Normal/Visual | 向下移动 5 行 |
+| `K` | Normal/Visual | 向上移动 5 行 |
+| `H` | Normal/Visual | 跳到行首 |
+| `L` | Normal/Visual | 跳到行尾 |
 
 ### 搜索
 
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
+| `*` | Normal | 原地高亮光标下的词（光标不动，之后用 `n`/`N` 跳转） |
 | `<leader><CR>` | Normal | 取消搜索高亮 |
 
 ### 16 进制编辑
@@ -289,6 +293,29 @@ Copilot 以 `copilot-language-server` 形式通过原生 `vim.lsp.inline_complet
 | `copilot` | GitHub Copilot inline completion | `copilot-language-server` |
 
 列表由 `lua/plugins/lsp.lua` 顶部的 `servers` table 单一驱动。手动管理可用 `:Mason` 界面按 `i` 安装。
+
+## VS Code（vscode-neovim）兼容
+
+本配置可直接被 [vscode-neovim](https://github.com/vscode-neovim/vscode-neovim) 加载（`vim.g.vscode` 分支）：
+
+- **禁用**：UI（lualine/bufferline/nvim-tree/telescope 等）、LSP/Mason、补全、gitsigns、markdown、autopairs——均由 VS Code 接管
+- **保留**：treesitter（供 flash 选区）、Comment、surround、flash 及所有 normal/visual 键位
+- **桥接键位**：`Q` 关闭标签页、`E` 放弃修改重载、`<leader>h/j/k/l` 跳分屏、`<leader>si/sv` 分屏、`tt` 资源管理器、`<leader>ff/fg` 快速打开/全局搜索、`<C-/>` 注释
+
+VS Code 侧需在 settings.json 配置（无法随本仓库分发）：
+
+```jsonc
+{
+  // WSL 下必须启用，nvim 跑在 WSL 内
+  "vscode-neovim.useWSL": true,
+  // 插入模式按键不经过 nvim，jj 退出需用 composite keys（插件 ≥ v1.5）
+  "vscode-neovim.compositeKeys": {
+    "jj": { "command": "vscode-neovim.escape" }
+  }
+}
+```
+
+> 注意：旧方案的 `compositeEscape1/2` keybindings 已废弃，若 keybindings.json 中有残留需删除，否则按 `j` 会报错。
 
 ## Tmux 配置
 

@@ -1,3 +1,8 @@
+-- 插入模式与补全由 VS Code 接管，vscode-neovim 下禁用
+if vim.g.vscode then
+  return {}
+end
+
 return {
   {
     "saghen/blink.cmp",

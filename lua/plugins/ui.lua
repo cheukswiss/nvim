@@ -1,3 +1,8 @@
+-- UI 由 VS Code 渲染，vscode-neovim 下全部禁用
+if vim.g.vscode then
+  return {}
+end
+
 return {
   -- colorscheme
   {

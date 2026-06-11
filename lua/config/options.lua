@@ -74,11 +74,16 @@ opt.autochdir = false
 -- 剪贴板设置（使用系统剪贴板 + 寄存器）
 opt.clipboard = "unnamedplus"
 
+-- vscode-neovim：用其内置 provider 同步 VS Code 剪贴板，跳过 win32yank
+if vim.g.vscode then
+  vim.g.clipboard = vim.g.vscode_clipboard
+end
+
 -- WSL：用 win32yank.exe 桥接 Windows 剪贴板
 -- exe 随本仓库分发（stdpath("config")/win32yank.exe），不依赖 PATH；
 -- 命令用列表形式（不过 shell，路径含空格也安全）。
 -- 仅在 WSL 且 exe 可执行时启用，避免污染原生 Linux / macOS 的 provider。
-if vim.fn.has("wsl") == 1 then
+if not vim.g.vscode and vim.fn.has("wsl") == 1 then
   local win32yank = vim.fn.stdpath("config") .. "/bin/win32yank.exe"
   if vim.fn.executable(win32yank) == 1 then
     vim.g.clipboard = {
