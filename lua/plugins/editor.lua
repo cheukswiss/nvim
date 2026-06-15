@@ -48,6 +48,7 @@ return {
       -- 文件 / 搜索
       { "<C-p>",      "<cmd>Telescope find_files<cr>",              desc = "Find files" },
       { "<leader>ff", "<cmd>Telescope find_files<cr>",              desc = "Find files" },
+      { "<leader>fF", function() require("telescope.builtin").find_files({ cwd = vim.fn.expand("%:p:h") }) end, desc = "Find files (current dir)" },
       { "<leader>fr", "<cmd>Telescope oldfiles<cr>",                desc = "Recent files" },
       { "<leader>fg", "<cmd>Telescope live_grep<cr>",               desc = "Live grep" },
       { "<leader>fb", "<cmd>Telescope buffers<cr>",                 desc = "Buffers" },
@@ -98,7 +99,10 @@ return {
       { "tf", "<cmd>NvimTreeFindFile<cr>", desc = "Find file in tree" },
     },
     config = function()
-      require("nvim-tree").setup()
+      require("nvim-tree").setup({
+        -- 切换 buffer 时自动在树中展开并高亮当前文件（tf 的自动版）
+        update_focused_file = { enable = true },
+      })
     end,
   },
 

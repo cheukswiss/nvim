@@ -51,6 +51,29 @@ map("n", "Q", ":q<CR>")
 map("n", "E", ":e!<CR>")
 
 -- =========================
+--      文件路径复制
+-- =========================
+-- 把当前文件路径写入 + 寄存器（= 系统剪贴板，见 options.lua 的 unnamedplus）。
+-- 用 filename-modifier 取不同形态：:. 相对 cwd、:p 绝对、:t 文件名、:p:h 绝对目录。
+-- 放在 VS Code 分流之前：expand/setreg 两端行为一致，原生 nvim 与 vscode-neovim 都可用。
+local function copy_path(modifier, label)
+    return function()
+        local path = vim.fn.expand("%:" .. modifier)
+        if path == "" then
+            vim.notify("当前 buffer 没有文件名", vim.log.levels.WARN)
+            return
+        end
+        vim.fn.setreg("+", path)
+        vim.notify(label .. "  " .. path)
+    end
+end
+
+map("n", "<leader>yp", copy_path(".",   "Relative path"), { desc = "Copy relative path (to cwd)" })
+map("n", "<leader>yP", copy_path("p",   "Absolute path"), { desc = "Copy absolute path" })
+map("n", "<leader>yn", copy_path("t",   "Filename"),      { desc = "Copy filename" })
+map("n", "<leader>yd", copy_path("p:h", "Directory"),     { desc = "Copy directory (absolute)" })
+
+-- =========================
 --   VS Code（vscode-neovim）
 -- =========================
 -- 插入模式、UI、LSP 均由 VS Code 接管；这里只桥接需要的操作到
@@ -139,6 +162,15 @@ for i = 1, 9 do
         require("bufferline").go_to(i, true)
     end)
 end
+
+-- =========================
+--        文件打开
+-- =========================
+
+-- 相对「当前文件所在目录」开新文件：命令行预填目录，按 Tab 补全后回车
+-- <C-r>=expand('%:h') 在键入时即把目录插进命令行，因此能实时 Tab 补全
+-- （打开「光标下路径」用内置 gf / 分屏打开用 <C-w>f，无需额外映射）
+map("n", "<leader>fe", ":e <C-r>=expand('%:h')<CR>/", { silent = false, desc = "Edit file in current dir" })
 
 --=========================
 --        插件键位映射

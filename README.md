@@ -114,6 +114,20 @@ Leader 键为 `Space`。
 | `*` | Normal | 原地高亮光标下的词（光标不动，之后用 `n`/`N` 跳转） |
 | `<leader><CR>` | Normal | 取消搜索高亮 |
 
+### 文件路径 / 打开
+
+复制类键位写入系统剪贴板（`+` 寄存器），并弹通知显示复制内容。
+
+| 快捷键 | 模式 | 功能 |
+|--------|------|------|
+| `<leader>yp` | Normal | 复制相对路径（相对 cwd） |
+| `<leader>yP` | Normal | 复制绝对路径 |
+| `<leader>yn` | Normal | 复制文件名 |
+| `<leader>yd` | Normal | 复制所在目录（绝对） |
+| `<leader>fe` | Normal | 在「当前文件所在目录」下开新文件（命令行预填目录，`Tab` 补全） |
+| `gf` | Normal | 打开光标下的路径（内置） |
+| `<C-w>f` | Normal | 光标下路径在分屏中打开（内置） |
+
 ### 16 进制编辑
 
 | 快捷键 | 模式 | 功能 |
@@ -166,6 +180,7 @@ Leader 键为 `Space`。
 |--------|------|------|
 | `<C-p>` | Normal | 搜索文件 |
 | `<leader>ff` | Normal | 搜索文件 |
+| `<leader>fF` | Normal | 搜索文件（范围限定当前文件目录） |
 | `<leader>fr` | Normal | 最近打开的文件 |
 | `<leader>fg` | Normal | 全局内容搜索 |
 | `<leader>fb` | Normal | 切换 Buffer |
@@ -186,6 +201,8 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 |--------|------|------|
 | `tt` | Normal | 开关文件树 |
 | `tf` | Normal | 在文件树中定位当前文件 |
+
+启用 `update_focused_file`：切换 buffer 时文件树会自动展开并高亮当前文件（`tf` 的自动版）。
 
 ### 注释 (Comment.nvim)
 
@@ -299,7 +316,7 @@ Copilot 以 `copilot-language-server` 形式通过原生 `vim.lsp.inline_complet
 本配置可直接被 [vscode-neovim](https://github.com/vscode-neovim/vscode-neovim) 加载（`vim.g.vscode` 分支）：
 
 - **禁用**：UI（lualine/bufferline/nvim-tree/telescope 等）、LSP/Mason、补全、gitsigns、markdown、autopairs——均由 VS Code 接管
-- **保留**：treesitter（供 flash 选区）、Comment、surround、flash 及所有 normal/visual 键位
+- **保留**：treesitter（供 flash 选区）、Comment、surround、flash、路径复制（`<leader>y*`）及所有 normal/visual 键位
 - **桥接键位**：`Q` 关闭标签页、`E` 放弃修改重载、`<leader>h/j/k/l` 跳分屏、`<leader>si/sv` 分屏、`tt` 资源管理器、`<leader>ff/fg` 快速打开/全局搜索、`<C-/>` 注释
 
 VS Code 侧需在 settings.json 配置（无法随本仓库分发）：
