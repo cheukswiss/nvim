@@ -95,7 +95,7 @@ Leader 键为 `Space`。
 | `S` | Normal | 保存文件 |
 | `Q` | Normal | 退出 |
 | `E` | Normal | 放弃修改并重载文件 |
-| `s` | Normal | 禁用（无操作） |
+| `s` | Normal/Visual/Operator | 快速跳转（Flash，详见下方表格） |
 | `<leader>;` | Normal | 进入命令模式（等同于 `:`) |
 
 ### 增强移动
@@ -141,8 +141,8 @@ Leader 键为 `Space`。
 |--------|------|------|
 | `<leader>si` | Normal | 垂直分割窗口 |
 | `<leader>sv` | Normal | 水平分割窗口 |
-| `sv` | Normal | 切换为左右布局 |
-| `sh` | Normal | 切换为上下布局 |
+| `<leader>wv` | Normal | 切换为左右布局 |
+| `<leader>wh` | Normal | 切换为上下布局 |
 | `<leader>h/j/k/l` | Normal | 窗口间移动 |
 | `<up>/<down>` | Normal | 调整窗口高度 |
 | `<left>/<right>` | Normal | 调整窗口宽度 |
@@ -161,16 +161,16 @@ Leader 键为 `Space`。
 
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
-| `sma` | Normal | 启用鼠标 |
-| `smc` | Normal | 禁用鼠标（便于终端原生选中复制） |
-| `sms` | Normal | 保存会话 |
-| `sls` | Normal | 加载会话 |
+| `<leader>ma` | Normal | 启用鼠标 |
+| `<leader>mc` | Normal | 禁用鼠标（便于终端原生选中复制） |
+| `<leader>ss` | Normal | 保存会话 |
+| `<leader>sl` | Normal | 加载会话 |
 
 ### Flash (快速跳转)
 
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
-| `<leader><leader>` | Normal/Visual/Operator | 输入字符后快速跳转到目标 |
+| `s` | Normal/Visual/Operator | 输入字符后快速跳转到目标 |
 | `<leader>.` | Normal/Visual/Operator | Treesitter 节点选择 |
 | `r` | Operator | 远程 Flash 跳转 |
 

@@ -44,8 +44,7 @@ end, { desc = "Highlight word under cursor" })
 map("n", "<leader>xd", ":%!xxd<CR>")
 map("n", "<leader>nxd", ":%!xxd -r<CR>")
 
--- 禁用s键，重新映射保存和退出
-map("n", "s", "<nop>")
+-- s 键交给 flash.nvim 做快速跳转（见 plugins/editor.lua），重新映射保存和退出
 map("n", "S", ":w<CR>")
 map("n", "Q", ":q<CR>")
 map("n", "E", ":e!<CR>")
@@ -113,8 +112,8 @@ end
 -- =========================
 
 -- 窗口布局切换
-map("n", "sv", "<C-w>t<C-w>H")
-map("n", "sh", "<C-w>t<C-w>K")
+map("n", "<leader>wv", "<C-w>t<C-w>H")
+map("n", "<leader>wh", "<C-w>t<C-w>K")
 
 -- 窗口分割
 map("n", "<leader>si", ":vsplit<CR>")
@@ -137,12 +136,12 @@ map("n", "<right>", ":vertical resize+5<CR>")
 -- =========================
 
 -- 鼠标设置
-map("n", "sma", ":set mouse=a<CR>")   -- 启用鼠标
-map("n", "smc", ":set mouse=<CR>")    -- 禁用鼠标（便于终端原生选中复制）
+map("n", "<leader>ma", ":set mouse=a<CR>")   -- 启用鼠标
+map("n", "<leader>mc", ":set mouse=<CR>")    -- 禁用鼠标（便于终端原生选中复制）
 
 -- 会话保存和加载（文件名用 Session.vim：tmux-resurrect 恢复 nvim 时按此约定 -S 加载）
-map("n", "sms", ":mksession! ./Session.vim<CR>")
-map("n", "sls", ":source ./Session.vim<CR>")
+map("n", "<leader>ss", ":mksession! ./Session.vim<CR>")
+map("n", "<leader>sl", ":source ./Session.vim<CR>")
 
 -- =========================
 --         Buffer 操作

@@ -151,7 +151,7 @@ return {
     end,
   },
 
-  -- 快速跳转（按 <leader><leader> 输入 2 字符，屏幕上出现字母标签直达）
+  -- 快速跳转（按 s 输入 2 字符，屏幕上出现字母标签直达）
   {
     "folke/flash.nvim",
     event = "VeryLazy",
@@ -163,7 +163,7 @@ return {
     },
     keys = {
       {
-        "<leader><leader>",
+        "s",
         mode = { "n", "x", "o" },
         function() require("flash").jump() end,
         desc = "Flash jump",

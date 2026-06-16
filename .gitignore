@@ -1,5 +1,5 @@
 lazy-lock.json
-.session.vim
+Session.vim
 
 # nvim 启动日志（$NVIM_LOG_FILE 未设置时会落在 CWD）
 nvim.log
