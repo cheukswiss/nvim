@@ -350,6 +350,8 @@ VS Code 侧需在 settings.json 配置（无法随本仓库分发）：
 | `Alt-V` | 水平分屏 |
 | `Alt-n` | 上一个窗口 |
 | `Alt-m` | 下一个窗口 |
+| `Alt-Shift-N` | 当前窗口左移一位 |
+| `Alt-Shift-M` | 当前窗口右移一位 |
 | `Alt-T` | 新建窗口 |
 | `Alt-W` | 关闭面板（最后一个面板时确认退出） |
 | `Alt-Q` | 确认退出 tmux |
