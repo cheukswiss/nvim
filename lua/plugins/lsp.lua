@@ -118,6 +118,18 @@ return {
           map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
           map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, "Prev diagnostic")
           map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic")
+
+          -- inlay hints（参数名/类型等）：服务端支持就开启，<leader>th 切换
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+            vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+            map("n", "<leader>th", function()
+              vim.lsp.inlay_hint.enable(
+                not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }),
+                { bufnr = event.buf }
+              )
+            end, "Toggle inlay hints")
+          end
         end,
       })
 

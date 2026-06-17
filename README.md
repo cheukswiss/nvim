@@ -254,6 +254,7 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | `<leader>cf` | Normal | 格式化当前缓冲区（conform，LSP 兜底） |
 | `[d` | Normal | 上一个诊断 |
 | `]d` | Normal | 下一个诊断 |
+| `<leader>th` | Normal | 切换 inlay hints（参数名/类型，服务端支持时默认开启） |
 
 > **保存时自动格式化**：c/cpp 等已配置的文件类型在保存时自动经 [conform.nvim](https://github.com/stevearc/conform.nvim) 格式化。临时关闭：全局 `:lua vim.g.disable_autoformat = true`，仅当前缓冲区 `:lua vim.b.disable_autoformat = true`；手动 `<leader>cf` 始终可用。
 
