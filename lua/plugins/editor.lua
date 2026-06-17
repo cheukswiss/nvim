@@ -100,8 +100,8 @@ return {
     },
     config = function()
       require("nvim-tree").setup({
-        -- 切换 buffer 时自动在树中展开并高亮当前文件（tf 的自动版）
-        update_focused_file = { enable = true },
+        -- 不自动在树中定位当前文件；需要时用 tf 手动定位
+        update_focused_file = { enable = false },
       })
     end,
   },

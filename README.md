@@ -203,7 +203,7 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | `tt` | Normal | 开关文件树 |
 | `tf` | Normal | 在文件树中定位当前文件 |
 
-启用 `update_focused_file`：切换 buffer 时文件树会自动展开并高亮当前文件（`tf` 的自动版）。
+文件树不自动定位当前文件（`update_focused_file` 关闭）；需要时用 `tf` 手动定位。
 
 ### 注释 (Comment.nvim)
 
