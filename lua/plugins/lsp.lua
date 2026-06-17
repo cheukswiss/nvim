@@ -27,8 +27,6 @@ return {
         javascript = { "eslint_d" },
         typescript = { "eslint_d" },
         go = { "golangcilint" },
-        c = { "cppcheck" },
-        cpp = { "cppcheck" },
       }
       vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
         group = vim.api.nvim_create_augroup("nvim_lint", { clear = true }),
@@ -115,7 +113,7 @@ return {
           end
 
           map("n", "gd", vim.lsp.buf.definition, "Go to definition")
-          map("n", "gk", vim.lsp.buf.hover, "Hover")
+          map("n", "gh", vim.lsp.buf.hover, "Hover")
           map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
           map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
           map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, "Prev diagnostic")

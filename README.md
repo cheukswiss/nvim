@@ -248,7 +248,7 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
 | `gd` | Normal | 跳转定义 |
-| `gk` | Normal | 悬浮文档 |
+| `gh` | Normal | 悬浮文档 |
 | `<leader>rn` | Normal | 重命名 |
 | `<leader>ca` | Normal | 代码操作 |
 | `<leader>cf` | Normal | 格式化当前缓冲区（conform，LSP 兜底） |
@@ -269,7 +269,7 @@ Neovim 0.11+ 内置 LSP 默认映射（无需配置即可使用）：
 | `gO` | Normal | 文档符号列表 |
 | `<C-S>` | Insert | 签名帮助 |
 
-> 注：Neovim 默认的 `K` 悬浮已被本配置（`keymaps.lua`）覆盖为"上移 5 行"，请使用 `gk` 触发 hover。
+> 注：Neovim 默认的 `K` 悬浮已被本配置（`keymaps.lua`）覆盖为"上移 5 行"，请使用 `gh` 触发 hover。
 
 ### AI 补全 (minuet-ai + DeepSeek)
 
