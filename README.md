@@ -77,7 +77,8 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) | 安全关闭 Buffer |
 | [which-key.nvim](https://github.com/folke/which-key.nvim) | 快捷键提示 |
 | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | 缩进参考线 |
-| [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d 等） |
+| [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d、cppcheck 等） |
+| [conform.nvim](https://github.com/stevearc/conform.nvim) | 格式化集成（clang-format，保存时自动 + `<leader>cf`） |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | 终端内 Markdown 渲染 |
 | [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) | 浏览器 Markdown 预览 |
 
@@ -250,8 +251,11 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | `gk` | Normal | 悬浮文档 |
 | `<leader>rn` | Normal | 重命名 |
 | `<leader>ca` | Normal | 代码操作 |
+| `<leader>cf` | Normal | 格式化当前缓冲区（conform，LSP 兜底） |
 | `[d` | Normal | 上一个诊断 |
 | `]d` | Normal | 下一个诊断 |
+
+> **保存时自动格式化**：c/cpp 等已配置的文件类型在保存时自动经 [conform.nvim](https://github.com/stevearc/conform.nvim) 格式化。临时关闭：全局 `:lua vim.g.disable_autoformat = true`，仅当前缓冲区 `:lua vim.b.disable_autoformat = true`；手动 `<leader>cf` 始终可用。
 
 Neovim 0.11+ 内置 LSP 默认映射（无需配置即可使用）：
 
@@ -310,6 +314,17 @@ Copilot 以 `copilot-language-server` 形式通过原生 `vim.lsp.inline_complet
 | `copilot` | GitHub Copilot inline completion | `copilot-language-server` |
 
 列表由 `lua/plugins/lsp.lua` 顶部的 `servers` table 单一驱动。手动管理可用 `:Mason` 界面按 `i` 安装。
+
+### 格式化与诊断
+
+LSP server 之外的工具（formatter / linter）经 `mason-tool-installer` 一并自动安装：
+
+| 工具 | 类型 | 适用语言 | Mason 包名 |
+|------|------|---------|-----------|
+| `clang-format` | formatter（conform） | C / C++ | `clang-format` |
+| `cppcheck` | linter（nvim-lint） | C / C++ | 需系统提供 / `:Mason` |
+
+C / C++ 当前能力：clangd 跳转·补全·hover·重命名·代码操作 + cppcheck 诊断 + clang-format 格式化（保存时自动，`<leader>cf` 手动）+ `cpp` treesitter parser。
 
 ## VS Code（vscode-neovim）兼容
 

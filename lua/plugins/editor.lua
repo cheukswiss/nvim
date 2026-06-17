@@ -7,7 +7,7 @@ return {
     config = function()
       local ts = require("nvim-treesitter")
       local parsers = {
-        "bash", "c", "go", "html", "javascript", "json", "lua",
+        "bash", "c", "cpp", "go", "html", "javascript", "json", "lua",
         "markdown", "markdown_inline", "python", "regex", "tsx",
         "typescript", "vim", "vimdoc", "yaml",
       }

@@ -41,6 +41,28 @@ return {
   },
 
   {
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
+    keys = {
+      { "<leader>cf", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, desc = "Format buffer" },
+    },
+    opts = {
+      formatters_by_ft = {
+        c = { "clang-format" },
+        cpp = { "clang-format" },
+      },
+      -- 保存时自动格式化；想临时关闭整体可设 vim.g.disable_autoformat = true
+      format_on_save = function(bufnr)
+        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+          return
+        end
+        return { timeout_ms = 1000, lsp_format = "fallback" }
+      end,
+    },
+  },
+
+  {
     "folke/lazydev.nvim",
     ft = "lua",
     opts = {
@@ -63,8 +85,10 @@ return {
     dependencies = { "williamboman/mason.nvim" },
     event = "VeryLazy",
     config = function()
+      -- LSP server 之外的工具（formatter/linter），与 server 一并自动安装
+      local tools = { "clang-format" }
       require("mason-tool-installer").setup({
-        ensure_installed = vim.tbl_values(servers),
+        ensure_installed = vim.list_extend(vim.tbl_values(servers), tools),
         run_on_start = true,
       })
     end,
