@@ -41,7 +41,6 @@ return {
 
   {
     "stevearc/conform.nvim",
-    event = { "BufWritePre" },
     cmd = { "ConformInfo" },
     keys = {
       { "<leader>cf", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, desc = "Format buffer" },
@@ -51,13 +50,6 @@ return {
         c = { "clang-format" },
         cpp = { "clang-format" },
       },
-      -- 保存时自动格式化；想临时关闭整体可设 vim.g.disable_autoformat = true
-      format_on_save = function(bufnr)
-        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-          return
-        end
-        return { timeout_ms = 1000, lsp_format = "fallback" }
-      end,
     },
   },
 
