@@ -1,6 +1,6 @@
 # Neovim Configuration
 
-基于 Lua 的轻量 Neovim 配置，使用 [lazy.nvim](https://github.com/folke/lazy.nvim) 管理插件，Neovim 0.12+ 原生 LSP / inline completion API。
+基于 Lua 的轻量 Neovim 配置，使用 [lazy.nvim](https://github.com/folke/lazy.nvim) 管理插件，Neovim 0.12+ 原生 LSP API。
 
 本仓库同时管理 tmux、zsh 自定义配置和一键安装脚本。
 
@@ -82,7 +82,7 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | 终端内 Markdown 渲染 |
 | [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) | 浏览器 Markdown 预览 |
 
-GitHub Copilot 通过 [`copilot-language-server`](https://www.npmjs.com/package/@github/copilot-language-server)（由 Mason 安装）以原生 LSP `inline_completion` 接入，无需第三方 Vim 插件。首次使用时 Mason 会在后台下载二进制——下载完成后打开任意源文件使 copilot 客户端 attach，然后在该 buffer 内运行 `:LspCopilotSignIn` 完成授权（命令为 buffer-local，attach 前不可见）。
+AI 补全通过 [minuet-ai.nvim](https://github.com/milanglacier/minuet-ai.nvim) 接入 DeepSeek，以 ghost text（行内灰字）展示。API key 从配置目录下的 `.env`（`DEEPSEEK_API_KEY=...`，已被 `.gitignore` 忽略）读取，由 `lua/config/env.lua` 在启动时注入环境变量。后端、模型、键位见 `lua/plugins/completion.lua`。
 
 ## 快捷键
 
@@ -271,17 +271,17 @@ Neovim 0.11+ 内置 LSP 默认映射（无需配置即可使用）：
 
 > 注：Neovim 默认的 `K` 悬浮已被本配置（`keymaps.lua`）覆盖为"上移 5 行"，请使用 `gk` 触发 hover。
 
-### Copilot (LSP inline completion)
+### AI 补全 (minuet-ai + DeepSeek)
 
-Copilot 以 `copilot-language-server` 形式通过原生 `vim.lsp.inline_completion` 接入，幽灵文字直接由 LSP 渲染。
+minuet-ai 接 DeepSeek，以 ghost text（行内灰字）展示，所有文件类型自动触发。
 
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
-| `<C-l>` | Insert | 接受当前建议 |
+| `<C-l>` | Insert | 接受整段建议 |
+| `<C-j>` | Insert | 仅接受一行 |
 | `<M-]>` | Insert | 下一个建议 |
 | `<M-[>` | Insert | 上一个建议 |
-| `:LspCopilotSignIn` | Cmd | 首次授权登录 |
-| `:LspCopilotSignOut` | Cmd | 退出登录 |
+| `<M-e>` | Insert | 取消当前建议 |
 
 ### 代码补全 (blink.cmp)
 
@@ -311,7 +311,6 @@ Copilot 以 `copilot-language-server` 形式通过原生 `vim.lsp.inline_complet
 | `clangd` | C / C++ | `clangd` |
 | `rust_analyzer` | Rust | `rust-analyzer` |
 | `bashls` | Bash / Shell | `bash-language-server` |
-| `copilot` | GitHub Copilot inline completion | `copilot-language-server` |
 
 列表由 `lua/plugins/lsp.lua` 顶部的 `servers` table 单一驱动。手动管理可用 `:Mason` 界面按 `i` 安装。
 

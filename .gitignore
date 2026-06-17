@@ -6,3 +6,5 @@ nvim.log
 
 # 评审/辅助工具残留
 .codex
+
+.env

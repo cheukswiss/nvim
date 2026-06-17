@@ -12,7 +12,6 @@ local servers = {
   clangd = "clangd",
   rust_analyzer = "rust-analyzer",
   bashls = "bash-language-server",
-  copilot = "copilot-language-server",
 }
 
 return {
@@ -129,17 +128,6 @@ return {
           map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
           map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, "Prev diagnostic")
           map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic")
-
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if
-            client
-            and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlineCompletion, event.buf)
-          then
-            vim.lsp.inline_completion.enable(true, { bufnr = event.buf })
-            map("i", "<C-l>", vim.lsp.inline_completion.get, "Accept inline completion")
-            map("i", "<M-]>", function() vim.lsp.inline_completion.select({ count = 1 }) end, "Next inline completion")
-            map("i", "<M-[>", function() vim.lsp.inline_completion.select({ count = -1 }) end, "Prev inline completion")
-          end
         end,
       })
 
@@ -155,7 +143,7 @@ return {
         },
       })
 
-      -- 只 enable 二进制已在 PATH 的 server，避免首次启动时 mason 还在下载 copilot-language-server 等
+      -- 只 enable 二进制已在 PATH 的 server，避免首次启动时 mason 还在下载
       local function enable_available()
         local available = {}
         for name, pkg in pairs(servers) do

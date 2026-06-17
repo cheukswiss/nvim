@@ -1,3 +1,6 @@
+-- 加载 .env 环境变量（API key 等），需在插件初始化前
+require("config.env").load()
+
 -- 基础设置
 require("config.options")
 
