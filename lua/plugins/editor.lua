@@ -49,6 +49,7 @@ return {
       { "<C-p>",      "<cmd>Telescope find_files<cr>",              desc = "Find files" },
       { "<leader>ff", "<cmd>Telescope find_files<cr>",              desc = "Find files" },
       { "<leader>fF", function() require("telescope.builtin").find_files({ cwd = vim.fn.expand("%:p:h") }) end, desc = "Find files (current dir)" },
+      { "<leader>fa", function() require("telescope.builtin").find_files({ hidden = true, no_ignore = true, file_ignore_patterns = { "%.git/" } }) end, desc = "Find files (all, incl. ignored/hidden)" },
       { "<leader>fr", "<cmd>Telescope oldfiles<cr>",                desc = "Recent files" },
       { "<leader>fg", "<cmd>Telescope live_grep<cr>",               desc = "Live grep" },
       { "<leader>fb", "<cmd>Telescope buffers<cr>",                 desc = "Buffers" },

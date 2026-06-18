@@ -78,7 +78,7 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [which-key.nvim](https://github.com/folke/which-key.nvim) | 快捷键提示 |
 | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | 缩进参考线 |
 | [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d、cppcheck 等） |
-| [conform.nvim](https://github.com/stevearc/conform.nvim) | 格式化集成（clang-format，保存时自动 + `<leader>cf`） |
+| [conform.nvim](https://github.com/stevearc/conform.nvim) | 格式化集成（clang-format，`<leader>cf` 手动） |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | 终端内 Markdown 渲染 |
 | [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) | 浏览器 Markdown 预览 |
 
@@ -182,6 +182,7 @@ Leader 键为 `Space`。
 | `<C-p>` | Normal | 搜索文件 |
 | `<leader>ff` | Normal | 搜索文件 |
 | `<leader>fF` | Normal | 搜索文件（范围限定当前文件目录） |
+| `<leader>fa` | Normal | 搜索全部文件（含 .gitignore 忽略与隐藏文件） |
 | `<leader>fr` | Normal | 最近打开的文件 |
 | `<leader>fg` | Normal | 全局内容搜索 |
 | `<leader>fb` | Normal | 切换 Buffer |
@@ -256,7 +257,7 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 | `]d` | Normal | 下一个诊断 |
 | `<leader>th` | Normal | 切换 inlay hints（参数名/类型，服务端支持时默认开启） |
 
-> **保存时自动格式化**：c/cpp 等已配置的文件类型在保存时自动经 [conform.nvim](https://github.com/stevearc/conform.nvim) 格式化。临时关闭：全局 `:lua vim.g.disable_autoformat = true`，仅当前缓冲区 `:lua vim.b.disable_autoformat = true`；手动 `<leader>cf` 始终可用。
+> **格式化**：保存时不自动格式化；用 `<leader>cf` 手动经 [conform.nvim](https://github.com/stevearc/conform.nvim) 格式化当前缓冲区（c/cpp 走 clang-format，其余回退 LSP）。
 
 Neovim 0.11+ 内置 LSP 默认映射（无需配置即可使用）：
 
@@ -322,9 +323,8 @@ LSP server 之外的工具（formatter / linter）经 `mason-tool-installer` 一
 | 工具 | 类型 | 适用语言 | Mason 包名 |
 |------|------|---------|-----------|
 | `clang-format` | formatter（conform） | C / C++ | `clang-format` |
-| `cppcheck` | linter（nvim-lint） | C / C++ | 需系统提供 / `:Mason` |
 
-C / C++ 当前能力：clangd 跳转·补全·hover·重命名·代码操作 + cppcheck 诊断 + clang-format 格式化（保存时自动，`<leader>cf` 手动）+ `cpp` treesitter parser。
+C / C++ 当前能力：clangd 跳转·补全·hover·重命名·代码操作·诊断·inlay hints + clang-format 手动格式化（`<leader>cf`）+ `cpp` treesitter parser。
 
 ## VS Code（vscode-neovim）兼容
 
