@@ -81,8 +81,11 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | 格式化集成（clang-format，`<leader>cf` 手动） |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | 终端内 Markdown 渲染 |
 | [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) | 浏览器 Markdown 预览 |
+| [codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim) | AI 助手：对话 / 行内重构 / agent（接 DeepSeek） |
 
 AI 补全通过 [minuet-ai.nvim](https://github.com/milanglacier/minuet-ai.nvim) 接入 DeepSeek，以 ghost text（行内灰字）展示。API key 从配置目录下的 `.env`（`DEEPSEEK_API_KEY=...`，已被 `.gitignore` 忽略）读取，由 `lua/config/env.lua` 在启动时注入环境变量。后端、模型、键位见 `lua/plugins/completion.lua`。
+
+AI 助手（对话 / 按指令改代码 / agent）通过 [codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim) 接入 DeepSeek（模型 `deepseek-v4-pro`），与 minuet 的行内补全互补。复用同一把 `DEEPSEEK_API_KEY`（内置 deepseek adapter 默认读该环境变量）。配置见 `lua/plugins/ai.lua`；聊天面板内可用 `ga` 临时切换模型。
 
 ## 快捷键
 
@@ -286,6 +289,17 @@ minuet-ai 接 DeepSeek，以 ghost text（行内灰字）展示，所有文件�
 | `<M-]>` | Insert | 下一个建议 |
 | `<M-[>` | Insert | 上一个建议 |
 | `<M-e>` | Insert | 取消当前建议 |
+
+### AI 助手 (codecompanion + DeepSeek)
+
+对话 / 按指令改代码 / agent，主动触发（前缀 `<leader>a` = AI）。
+
+| 快捷键 | 模式 | 功能 |
+|--------|------|------|
+| `<leader>aa` | Normal/Visual | 动作面板（所有功能入口） |
+| `<leader>ac` | Normal/Visual | 开关聊天窗口 |
+| `<leader>ai` | Normal/Visual | 行内指令（Visual 时作用于选区） |
+| `<leader>ad` | Visual | 把选区加入聊天作上下文 |
 
 ### 代码补全 (blink.cmp)
 
