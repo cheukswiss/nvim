@@ -57,4 +57,19 @@ return {
       require("ibl").setup()
     end,
   },
+
+  -- 命令行浮窗（noice，仅接管 cmdline；消息/通知保持原生）
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    dependencies = { "MunifTanjim/nui.nvim" },
+    opts = {
+      cmdline = { enabled = true, view = "cmdline_popup" },
+      messages = { enabled = false },   -- 消息区
+      notify = { enabled = false },     -- 通知
+      popupmenu = { enabled = false },  -- 命令行候选，禁用由给 blink 接管，避免双菜单
+      lsp = { progress = { enabled = false } },
+      presets = { command_palette = true }, -- 命令行 + 候选靠上居中排布
+    },
+  },
 }

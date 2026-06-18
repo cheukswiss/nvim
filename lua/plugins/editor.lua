@@ -7,7 +7,7 @@ return {
     config = function()
       local ts = require("nvim-treesitter")
       local parsers = {
-        "bash", "c", "cpp", "go", "html", "javascript", "json", "lua",
+        "bash", "c", "cpp", "doxygen", "go", "html", "javascript", "json", "lua",
         "markdown", "markdown_inline", "python", "regex", "tsx",
         "typescript", "vim", "vimdoc", "yaml",
       }
@@ -188,6 +188,37 @@ return {
         function() require("flash").remote() end,
         desc = "Remote flash",
       },
+    },
+  },
+
+  -- TODO/FIXME/HACK 等注释高亮 + 检索
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {},
+    keys = {
+      { "]t", function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
+      { "[t", function() require("todo-comments").jump_prev() end, desc = "Prev todo comment" },
+      { "<leader>ft", "<cmd>TodoTelescope<cr>", desc = "Find todos" },
+    },
+  },
+
+  -- 代码大纲侧栏（符号导航；LSP 优先，clangd 降级时回退 treesitter）
+  {
+    "stevearc/aerial.nvim",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+    cmd = { "AerialToggle", "AerialOpen", "AerialNavToggle" },
+    keys = {
+      { "<leader>o", "<cmd>AerialToggle<cr>", desc = "Toggle outline (aerial)" },
+    },
+    opts = {
+      -- backends 默认 {"lsp","treesitter",...}：clangd 可用时用 LSP 符号，否则回退 treesitter
+      layout = { default_direction = "right", min_width = 30 },
+      show_guides = true,
     },
   },
 }

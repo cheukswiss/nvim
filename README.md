@@ -60,9 +60,11 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | 模糊搜索 |
 | [telescope-fzf-native.nvim](https://github.com/nvim-telescope/telescope-fzf-native.nvim) | Telescope fzf 排序器（C 实现，10x 速度提升） |
 | [nvim-tree.lua](https://github.com/nvim-tree/nvim-tree.lua) | 文件树 |
+| [aerial.nvim](https://github.com/stevearc/aerial.nvim) | 代码大纲侧栏（LSP/treesitter 符号） |
 | [flash.nvim](https://github.com/folke/flash.nvim) | 快速跳转 |
 | [nvim-autopairs](https://github.com/windwp/nvim-autopairs) | 自动补全括号 |
 | [Comment.nvim](https://github.com/numToStr/Comment.nvim) | 快速注释 |
+| [todo-comments.nvim](https://github.com/folke/todo-comments.nvim) | TODO/FIXME/HACK 高亮与检索 |
 | [nvim-surround](https://github.com/kylechui/nvim-surround) | 括号/引号包裹操作 |
 | [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) | 状态栏 |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git 状态标记 / hunk 操作 |
@@ -77,6 +79,7 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) | 安全关闭 Buffer |
 | [which-key.nvim](https://github.com/folke/which-key.nvim) | 快捷键提示 |
 | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | 缩进参考线 |
+| [noice.nvim](https://github.com/folke/noice.nvim) | 命令行浮窗（仅接管 cmdline，command_palette 布局） |
 | [nvim-lint](https://github.com/mfussenegger/nvim-lint) | 异步 linter 集成（shellcheck、ruff、eslint_d、cppcheck 等） |
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | 格式化集成（clang-format，`<leader>cf` 手动） |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | 终端内 Markdown 渲染 |
@@ -192,6 +195,8 @@ Leader 键为 `Space`。
 | `<leader>fg` | Visual | 用选中文本做全局内容搜索（grep_string） |
 | `<leader>fb` | Normal | 切换 Buffer |
 | `<leader>fh` | Normal | 搜索帮助文档 |
+| `<leader>ft` | Normal | 搜索 TODO/FIXME 等标记（TodoTelescope） |
+| `]t` / `[t` | Normal | 跳到下/上一个 TODO 注释 |
 | `<leader>/` | Normal | 当前 Buffer 内搜索 |
 | `<leader>fs` | Normal | 文档符号 |
 | `<leader>fS` | Normal | 工作区符号 |
@@ -208,6 +213,7 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 |--------|------|------|
 | `tt` | Normal | 开关文件树 |
 | `tf` | Normal | 在文件树中定位当前文件 |
+| `<leader>o` | Normal | 开关代码大纲侧栏（aerial） |
 
 文件树不自动定位当前文件（`update_focused_file` 关闭）；需要时用 `tf` 手动定位。
 
@@ -340,7 +346,7 @@ LSP server 之外的工具（formatter / linter）经 `mason-tool-installer` 一
 |------|------|---------|-----------|
 | `clang-format` | formatter（conform） | C / C++ | `clang-format` |
 
-C / C++ 当前能力：clangd 跳转·补全·hover·重命名·代码操作·诊断·inlay hints + clang-format 手动格式化（`<leader>cf`）+ `cpp` treesitter parser。
+C / C++ 当前能力：clangd 跳转·补全·hover·重命名·代码操作·诊断·inlay hints + clang-format 手动格式化（`<leader>cf`）+ `cpp` treesitter parser + Doxygen 注释高亮（`@brief`/`@param` 等，经注入的 `doxygen` parser）。
 
 ## VS Code（vscode-neovim）兼容
 
