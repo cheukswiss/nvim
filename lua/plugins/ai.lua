@@ -20,6 +20,17 @@ return {
       { "<leader>ad", "<cmd>CodeCompanionChat Add<cr>",     mode = "v",          desc = "AI: Add selection to chat" },
     },
     opts = {
+      opts = {
+        language = "Simplified Chinese",
+      },
+      display = {
+        chat = {
+          window = {
+            position = "right",
+            width = 0.4,
+          },
+        },
+      },
       adapters = {
         http = {
           deepseek = function()
