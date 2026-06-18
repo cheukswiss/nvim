@@ -35,6 +35,7 @@ return {
         http = {
           deepseek = function()
             return require("codecompanion.adapters").extend("deepseek", {
+              url = "https://api.deepseek.com/beta/chat/completions",
               schema = { model = { default = "deepseek-v4-pro" } },
             })
           end,
