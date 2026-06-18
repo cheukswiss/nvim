@@ -105,7 +105,7 @@ Leader 键为 `Space`。
 |--------|------|------|
 | `J` | Normal/Visual | 向下移动 5 行 |
 | `K` | Normal/Visual | 向上移动 5 行 |
-| `H` | Normal/Visual | 跳到行首 |
+| `H` | Normal/Visual | 跳到行首第一个非空白字符 |
 | `L` | Normal/Visual | 跳到行尾 |
 
 ### 搜索

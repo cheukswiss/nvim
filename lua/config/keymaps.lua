@@ -20,7 +20,7 @@ map("i", "jj", "<ESC>")
 -- 增强移动键（normal + visual；x 模式不影响 operator-pending，如 dH 仍可用）
 map({ "n", "x" }, "J", "5j")
 map({ "n", "x" }, "K", "5k")
-map({ "n", "x" }, "H", "0")
+map({ "n", "x" }, "H", "^")
 map({ "n", "x" }, "L", "$")
 
 -- leader+; 进入命令模式
