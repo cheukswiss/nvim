@@ -89,6 +89,13 @@ map("n", "<leader>yP", copy_path("p",   "Absolute path"), { desc = "Copy absolut
 map("n", "<leader>yn", copy_path("t",   "Filename"),      { desc = "Copy filename" })
 map("n", "<leader>yd", copy_path("p:h", "Directory"),     { desc = "Copy directory (absolute)" })
 
+-- 复制当前工作目录（= 打开的工程根，autochdir=false 故不随文件漂移）
+map("n", "<leader>yw", function()
+    local cwd = vim.fn.getcwd()
+    vim.fn.setreg("+", cwd)
+    vim.notify("Project root  " .. cwd)
+end, { desc = "Copy working directory (project root)" })
+
 -- =========================
 --   VS Code（vscode-neovim）
 -- =========================

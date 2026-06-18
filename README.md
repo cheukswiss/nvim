@@ -132,6 +132,7 @@ Leader 键为 `Space`。
 | `<leader>yP` | Normal | 复制绝对路径 |
 | `<leader>yn` | Normal | 复制文件名 |
 | `<leader>yd` | Normal | 复制所在目录（绝对） |
+| `<leader>yw` | Normal | 复制工作目录 / 工程根（`getcwd`） |
 | `<leader>fe` | Normal | 在「当前文件所在目录」下开新文件（命令行预填目录，`Tab` 补全） |
 | `gf` | Normal | 打开光标下的路径（内置） |
 | `<C-w>f` | Normal | 光标下路径在分屏中打开（内置） |
