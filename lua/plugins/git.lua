@@ -71,4 +71,12 @@ return {
       end,
     },
   },
+
+  -- 滚动条概览：右侧概览条显示整个文件的 git 增删改（读 gitsigns 数据），
+  -- 弥补 signcolumn 只显示可见行的局限；另叠加搜索/诊断/quickfix 位置
+  {
+    "lewis6991/satellite.nvim",
+    event = "VeryLazy",
+    opts = {},
+  },
 }
