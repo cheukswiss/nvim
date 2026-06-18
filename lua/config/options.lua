@@ -12,6 +12,7 @@ opt.showcmd = true
 opt.wildmenu = true
 opt.signcolumn = "yes"     -- 符号栏常驻，避免行号跳动
 opt.winborder = "rounded"  -- 浮动窗口默认圆角边框（LSP hover、诊断浮窗等统一）
+opt.colorcolumn = "80,100" -- 80/100 列竖线标尺（对应 VSCode editor.rulers）
 
 -- 搜索设置
 opt.hlsearch = true
