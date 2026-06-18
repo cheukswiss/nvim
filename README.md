@@ -113,6 +113,7 @@ Leader 键为 `Space`。
 | 快捷键 | 模式 | 功能 |
 |--------|------|------|
 | `*` | Normal | 原地高亮光标下的词（光标不动，之后用 `n`/`N` 跳转） |
+| `*` | Visual | 搜索选中的文本（设高亮，之后用 `n`/`N` 跳转） |
 | `<leader><CR>` | Normal | 取消搜索高亮 |
 
 ### 文件路径 / 打开
@@ -185,6 +186,7 @@ Leader 键为 `Space`。
 | `<leader>fa` | Normal | 搜索全部文件（含 .gitignore 忽略与隐藏文件） |
 | `<leader>fr` | Normal | 最近打开的文件 |
 | `<leader>fg` | Normal | 全局内容搜索 |
+| `<leader>fg` | Visual | 用选中文本做全局内容搜索（grep_string） |
 | `<leader>fb` | Normal | 切换 Buffer |
 | `<leader>fh` | Normal | 搜索帮助文档 |
 | `<leader>/` | Normal | 当前 Buffer 内搜索 |

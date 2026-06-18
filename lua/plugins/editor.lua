@@ -52,6 +52,13 @@ return {
       { "<leader>fa", function() require("telescope.builtin").find_files({ hidden = true, no_ignore = true, file_ignore_patterns = { "%.git/" } }) end, desc = "Find files (all, incl. ignored/hidden)" },
       { "<leader>fr", "<cmd>Telescope oldfiles<cr>",                desc = "Recent files" },
       { "<leader>fg", "<cmd>Telescope live_grep<cr>",               desc = "Live grep" },
+      { "<leader>fg", function()
+          local save_reg, save_type = vim.fn.getreg("v"), vim.fn.getregtype("v")
+          vim.cmd('noautocmd normal! "vy')
+          local text = vim.fn.getreg("v"):gsub("\n", " ")
+          vim.fn.setreg("v", save_reg, save_type)
+          require("telescope.builtin").grep_string({ search = text })
+        end, mode = "x", desc = "Grep selection" },
       { "<leader>fb", "<cmd>Telescope buffers<cr>",                 desc = "Buffers" },
       { "<leader>fh", "<cmd>Telescope help_tags<cr>",               desc = "Help tags" },
       { "<leader>/",  "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Search in buffer" },

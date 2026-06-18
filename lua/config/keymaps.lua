@@ -40,6 +40,23 @@ map("n", "*", function()
     vim.fn.histadd("/", vim.fn.getreg("/"))
 end, { desc = "Highlight word under cursor" })
 
+-- 可视模式 * ：搜索选中的文本（与上同，设高亮、光标不跳，之后用 n/N 跳转）
+map("x", "*", function()
+    local save_reg, save_type = vim.fn.getreg("v"), vim.fn.getregtype("v")
+    vim.cmd('noautocmd normal! "vy')
+    local text = vim.fn.getreg("v")
+    vim.fn.setreg("v", save_reg, save_type)
+    if text == "" then
+        return
+    end
+    -- \V 很不魔法：仅 \ 特殊；转义 \ 与分隔符 /，多行选区换行转 \n
+    local pat = "\\V" .. vim.fn.escape(text, "\\/")
+    pat = pat:gsub("\n", "\\n")
+    vim.fn.setreg("/", pat)
+    vim.opt.hlsearch = true
+    vim.fn.histadd("/", pat)
+end, { desc = "Search visual selection" })
+
 -- 16进制编辑
 map("n", "<leader>xd", ":%!xxd<CR>")
 map("n", "<leader>nxd", ":%!xxd -r<CR>")
