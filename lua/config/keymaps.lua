@@ -118,8 +118,9 @@ if vim.g.vscode then
     map("n", "<leader>ff", action("workbench.action.quickOpen"))
     map("n", "<leader>fg", action("workbench.action.findInFiles"))
 
-    -- 注释（对应 nvim 下的 Comment.nvim）
+    -- 注释（对应 nvim 下的 Comment.nvim）；<C-_> 是多数终端 Ctrl+/ 的实际键码
     map({ "n", "x" }, "<C-/>", action("editor.action.commentLine"))
+    map({ "n", "x" }, "<C-_>", action("editor.action.commentLine"))
 
     return
 end
@@ -193,5 +194,8 @@ map("n", "<leader>fe", ":e <C-r>=expand('%:h')<CR>/", { silent = false, desc = "
 -- =========================
 
 -- Ctrl+/ 注释/取消注释
+-- 多数终端 Ctrl+/ 发送的是 <C-_>，两个键码都映射以兼容
 map("n", "<C-/>", "gcc", { remap = true })
 map("v", "<C-/>", "gc", { remap = true })
+map("n", "<C-_>", "gcc", { remap = true })
+map("v", "<C-_>", "gc", { remap = true })

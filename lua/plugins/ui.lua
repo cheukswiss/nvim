@@ -70,7 +70,7 @@ return {
       cmdline = { enabled = true, view = "cmdline_popup" },
       messages = { enabled = false },   -- 消息区
       notify = { enabled = false },     -- 通知
-      popupmenu = { enabled = false },  -- 命令行候选，禁用由给 blink 接管，避免双菜单
+      popupmenu = { enabled = true },   -- 命令行候选用 noice 浮窗（配合 command_palette 居中）；插入态补全仍由 blink 独立处理
       lsp = { progress = { enabled = false } },
       presets = { command_palette = true }, -- 命令行 + 候选靠上居中排布
     },

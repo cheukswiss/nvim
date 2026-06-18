@@ -30,7 +30,7 @@ return {
   -- 浏览器实时预览（WSL2/本地有效，SSH 远程下不可用）
   {
     "iamcco/markdown-preview.nvim",
-    build = "cd app && npm install",
+    build = function() vim.fn["mkdp#util#install"]() end,
     ft = { "markdown" },
     keys = {
       { "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Toggle Markdown preview" },

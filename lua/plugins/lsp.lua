@@ -75,7 +75,14 @@ return {
     event = "VeryLazy",
     config = function()
       -- LSP server 之外的工具（formatter/linter），与 server 一并自动安装
-      local tools = { "clang-format" }
+      -- linter 名与 nvim-lint linters_by_ft 保持一致，避免两份清单漂移
+      local tools = {
+        "clang-format",   -- conform: c/cpp
+        "shellcheck",     -- nvim-lint: sh/bash
+        "ruff",           -- nvim-lint: python
+        "eslint_d",       -- nvim-lint: javascript/typescript
+        "golangci-lint",  -- nvim-lint: go
+      }
       require("mason-tool-installer").setup({
         ensure_installed = vim.list_extend(vim.tbl_values(servers), tools),
         run_on_start = true,

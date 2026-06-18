@@ -39,7 +39,13 @@ return {
         provider = "openai_fim_compatible",
         request_timeout = 5,
         virtualtext = {
-          auto_trigger_ft = { "*" },
+          -- 白名单：仅在编程语言文件里自动触发，避免把 .env / 凭证 / 提交信息等
+          -- 内容发往 DeepSeek（这些文件 filetype 为空或非下列项，不会触发）
+          auto_trigger_ft = {
+            "lua", "python", "c", "cpp", "go", "rust",
+            "javascript", "typescript", "javascriptreact", "typescriptreact",
+            "sh", "bash", "json", "yaml", "html", "css", "vim",
+          },
           show_on_completion_menu = true, -- blink 菜单可见时也显示灰字，否则会被抑制
           keymap = {
             accept = "<C-l>",

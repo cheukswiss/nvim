@@ -12,8 +12,10 @@ function M.load()
     -- 仅匹配 KEY=VALUE（容许行首空格）；空行、注释、畸形行自然不匹配而跳过
     local key, value = line:match("^%s*([%w_]+)%s*=%s*(.*)$")
     if key then
-      -- 去掉值两侧可能的引号
-      value = value:gsub("^['\"]", ""):gsub("['\"]%s*$", "")
+      -- 去行尾空白与 CRLF 的 \r（WSL 下 .env 若存成 CRLF 会带尾随 \r）
+      value = value:gsub("%s+$", "")
+      -- 去掉成对的首尾引号（两端须为同一种引号才剥，避免误删单侧引号）
+      value = value:gsub("^(['\"])(.*)%1$", "%2")
       -- 已存在的环境变量优先（外部 export 可覆盖 .env）
       vim.env[key] = vim.env[key] or value
     end
