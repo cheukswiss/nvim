@@ -8,7 +8,7 @@ return {
   {
     "MeanderingProgrammer/render-markdown.nvim",
     enabled = false, -- Disabled
-    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.icons" },
     ft = { "markdown" },
     keys = {
       { "<leader>mr", "<cmd>RenderMarkdown toggle<cr>", desc = "Toggle Markdown render" },
@@ -33,11 +33,15 @@ return {
     "OXY2DEV/markview.nvim",
     -- 作者建议 lazy=false：插件自带懒加载，外部再 ft 懒加载会拖慢首个 .md 的渲染
     lazy = false,
-    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.icons" },
     keys = {
       { "<leader>mr", "<cmd>Markview toggle<cr>", desc = "Toggle Markdown render" },
     },
-    opts = {},
+    opts = {
+      preview = {
+        icon_provider = "mini",
+      },
+    },
   },
 
   -- 浏览器实时预览（WSL2/本地有效，SSH 远程下不可用）

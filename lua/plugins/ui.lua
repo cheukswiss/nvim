@@ -19,7 +19,7 @@ return {
   -- 状态栏
   {
     "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-mini/mini.icons" },
     config = function()
       require("lualine").setup({
         options = { theme = "vscode" },
@@ -31,7 +31,7 @@ return {
   {
     "akinsho/bufferline.nvim",
     version = "*",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-mini/mini.icons" },
     event = "VeryLazy",
     config = function()
       require("bufferline").setup({

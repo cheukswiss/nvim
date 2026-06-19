@@ -101,7 +101,7 @@ return {
   {
     "nvim-tree/nvim-tree.lua",
     cond = not vim.g.vscode,  -- VS Code 下用自带资源管理器
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-mini/mini.icons" },
     keys = {
       { "tt", "<cmd>NvimTreeToggle<cr>", desc = "Toggle file tree" },
       { "tf", "<cmd>NvimTreeFindFile<cr>", desc = "Find file in tree" },
@@ -209,7 +209,7 @@ return {
     "stevearc/aerial.nvim",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
-      "nvim-tree/nvim-web-devicons",
+      "nvim-mini/mini.icons",
     },
     cmd = { "AerialToggle", "AerialOpen", "AerialNavToggle" },
     keys = {
