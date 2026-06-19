@@ -180,11 +180,11 @@ map("n", "<A-]>", ":BufferLineCycleNext<CR>")
 map("n", "<A-[>", ":BufferLineCyclePrev<CR>")
 
 -- Buffer 关闭
-map("n", "<leader>bc", ":Bdelete<CR>")
+map("n", "<A-w>", ":Bdelete<CR>")
 map("n", "<leader>bo", ":BufferLineCloseOthers<CR>")
 
 -- 重开上一个关闭的 buffer：Neovim 不记录已关闭 buffer，用 BufDelete 记下最近被删
--- 的真实文件路径（跳过无名/特殊 buffer），<leader>ft 再 :edit 回来
+-- 的真实文件路径（跳过无名/特殊 buffer），<leader>bt 再 :edit 回来
 local last_closed_buf = nil
 vim.api.nvim_create_autocmd("BufDelete", {
     callback = function(args)
@@ -194,7 +194,7 @@ vim.api.nvim_create_autocmd("BufDelete", {
         end
     end,
 })
-map("n", "<leader>ft", function()
+map("n", "<leader>bt", function()
     if last_closed_buf == nil then
         vim.notify("没有记录到已关闭的 buffer", vim.log.levels.WARN)
         return
