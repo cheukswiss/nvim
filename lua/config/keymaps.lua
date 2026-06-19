@@ -164,6 +164,9 @@ map("n", "<right>", ":vertical resize+5<CR>")
 map("n", "<leader>ma", ":set mouse=a<CR>")   -- 启用鼠标
 map("n", "<leader>mc", ":set mouse=<CR>")    -- 禁用鼠标（便于终端原生选中复制）
 
+-- 切换软换行（wrap）
+map("n", "<leader>sw", ":set wrap!<CR>", { desc = "Toggle wrap" })
+
 -- 会话保存和加载（文件名用 Session.vim：tmux-resurrect 恢复 nvim 时按此约定 -S 加载）
 map("n", "<leader>ss", ":mksession! ./Session.vim<CR>")
 map("n", "<leader>sl", ":source ./Session.vim<CR>")
@@ -179,6 +182,25 @@ map("n", "<A-[>", ":BufferLineCyclePrev<CR>")
 -- Buffer 关闭
 map("n", "<leader>bc", ":Bdelete<CR>")
 map("n", "<leader>bo", ":BufferLineCloseOthers<CR>")
+
+-- 重开上一个关闭的 buffer：Neovim 不记录已关闭 buffer，用 BufDelete 记下最近被删
+-- 的真实文件路径（跳过无名/特殊 buffer），<leader>ft 再 :edit 回来
+local last_closed_buf = nil
+vim.api.nvim_create_autocmd("BufDelete", {
+    callback = function(args)
+        local name = vim.api.nvim_buf_get_name(args.buf)
+        if name ~= "" and vim.bo[args.buf].buftype == "" then
+            last_closed_buf = name
+        end
+    end,
+})
+map("n", "<leader>ft", function()
+    if last_closed_buf == nil then
+        vim.notify("没有记录到已关闭的 buffer", vim.log.levels.WARN)
+        return
+    end
+    vim.cmd("edit " .. vim.fn.fnameescape(last_closed_buf))
+end, { desc = "Reopen last closed buffer" })
 
 -- Alt+数字切换 Buffer
 for i = 1, 9 do
