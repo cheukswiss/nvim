@@ -4,9 +4,10 @@ if vim.g.vscode then
 end
 
 return {
-  -- 终端内 Markdown 渲染（标题/表格/代码块/链接等直接在 buffer 中可视化）
+  -- render-markdown: 终端内 Markdown 渲染
   {
     "MeanderingProgrammer/render-markdown.nvim",
+    enabled = false, -- Disabled
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
     ft = { "markdown" },
     keys = {
@@ -25,6 +26,18 @@ return {
         icons = { "●", "○", "◆", "◇" },
       },
     },
+  },
+
+  -- markview: 终端内 Markdown 渲染
+  {
+    "OXY2DEV/markview.nvim",
+    -- 作者建议 lazy=false：插件自带懒加载，外部再 ft 懒加载会拖慢首个 .md 的渲染
+    lazy = false,
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+    keys = {
+      { "<leader>mr", "<cmd>Markview toggle<cr>", desc = "Toggle Markdown render" },
+    },
+    opts = {},
   },
 
   -- 浏览器实时预览（WSL2/本地有效，SSH 远程下不可用）
