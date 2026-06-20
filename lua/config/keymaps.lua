@@ -62,7 +62,15 @@ map("n", "<leader>xd", ":%!xxd<CR>")
 map("n", "<leader>nxd", ":%!xxd -r<CR>")
 
 -- s 键交给 flash.nvim 做快速跳转（见 plugins/editor.lua），重新映射保存和退出
-map("n", "S", ":w<CR>")
+-- 有文件名 → 直接 :w；无名 buffer（如 <A-t> :enew 新建）→ 预填 :saveas <cwd>/
+-- 进命令行，输入文件名 + Tab 补全 + 回车即可存盘并把 buffer 命名为该文件
+map("n", "S", function()
+    if vim.fn.expand("%") == "" then
+        vim.api.nvim_feedkeys(":saveas " .. vim.fn.getcwd() .. "/", "n", false)
+    else
+        vim.cmd("write")
+    end
+end, { desc = "Save (unnamed buffer → save-as)" })
 map("n", "Q", ":q<CR>")
 map("n", "E", ":e!<CR>")
 
@@ -179,12 +187,15 @@ map("n", "<leader>sl", ":source ./Session.vim<CR>")
 map("n", "<A-]>", ":BufferLineCycleNext<CR>")
 map("n", "<A-[>", ":BufferLineCyclePrev<CR>")
 
+-- 新建空 buffer（类似新标签页；tmux 的 Alt+Shift+T 新建 window，二者分层）
+map("n", "<A-t>", ":enew<CR>", { desc = "New empty buffer" })
+
 -- Buffer 关闭
 map("n", "<A-w>", ":Bdelete<CR>")
-map("n", "<leader>bo", ":BufferLineCloseOthers<CR>")
+map("n", "<A-o>", ":BufferLineCloseOthers<CR>", { desc = "Close other buffers" })
 
 -- 重开上一个关闭的 buffer：Neovim 不记录已关闭 buffer，用 BufDelete 记下最近被删
--- 的真实文件路径（跳过无名/特殊 buffer），<leader>bt 再 :edit 回来
+-- 的真实文件路径（跳过无名/特殊 buffer），<A-r> 再 :edit 回来
 local last_closed_buf = nil
 vim.api.nvim_create_autocmd("BufDelete", {
     callback = function(args)
@@ -194,7 +205,7 @@ vim.api.nvim_create_autocmd("BufDelete", {
         end
     end,
 })
-map("n", "<leader>bt", function()
+map("n", "<A-r>", function()
     if last_closed_buf == nil then
         vim.notify("没有记录到已关闭的 buffer", vim.log.levels.WARN)
         return

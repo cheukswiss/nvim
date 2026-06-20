@@ -29,6 +29,15 @@ elif command -v exa &>/dev/null; then
 fi
 
 # ── 工具函数 ────────────────────────────────
+# vis：恢复当前目录的 nvim session
+function vis() {
+  if [ -f Session.vim ]; then
+    nvim -S Session.vim "$@"
+  else
+    nvim "$@"
+  fi
+}
+
 # tmux 快速进入
 function t() {
   if [ -n "$TMUX" ]; then
