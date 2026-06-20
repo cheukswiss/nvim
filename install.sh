@@ -25,7 +25,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 else
   PLATFORM="Linux"
   PKG_CMD=(sudo apt install -y)
-  DEPS=("tmux tmux" "xclip xclip" "ripgrep rg" "fd-find fdfind")
+  DEPS=("tmux tmux" "xclip xclip" "ripgrep rg" "fd-find fdfind fd")
 fi
 
 CARGO_DEPS=(eza yazi)
