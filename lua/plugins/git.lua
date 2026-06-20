@@ -9,14 +9,6 @@ return {
     "lewis6991/gitsigns.nvim",
     event = "VeryLazy",
     opts = {
-      signs = {
-        add          = { text = "▎" },
-        change       = { text = "▎" },
-        delete       = { text = "" },
-        topdelete    = { text = "" },
-        changedelete = { text = "▎" },
-        untracked    = { text = "▎" },
-      },
       current_line_blame_opts = { delay = 500 }, -- 默认 1000 太慢
       preview_config = { border = "rounded" },
       on_attach = function(buffer)
@@ -77,6 +69,8 @@ return {
   {
     "lewis6991/satellite.nvim",
     event = "VeryLazy",
-    opts = {},
+    opts = {
+      excluded_filetypes = { "NvimTree", "aerial" },
+    },
   },
 }
