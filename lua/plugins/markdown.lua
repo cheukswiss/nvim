@@ -1,37 +1,11 @@
--- Markdown 预览/渲染用 VS Code 自带功能，vscode-neovim 下禁用
 if vim.g.vscode then
   return {}
 end
 
 return {
-  -- render-markdown: 终端内 Markdown 渲染
-  {
-    "MeanderingProgrammer/render-markdown.nvim",
-    enabled = false, -- Disabled
-    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.icons" },
-    ft = { "markdown" },
-    keys = {
-      { "<leader>mr", "<cmd>RenderMarkdown toggle<cr>", desc = "Toggle Markdown render" },
-    },
-    opts = {
-      heading = {
-        icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
-      },
-      code = {
-        sign = false,
-        width = "block",
-        right_pad = 1,
-      },
-      bullet = {
-        icons = { "●", "○", "◆", "◇" },
-      },
-    },
-  },
-
   -- markview: 终端内 Markdown 渲染
   {
     "OXY2DEV/markview.nvim",
-    -- 作者建议 lazy=false：插件自带懒加载，外部再 ft 懒加载会拖慢首个 .md 的渲染
     lazy = false,
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.icons" },
     keys = {
@@ -53,9 +27,15 @@ return {
       { "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Toggle Markdown preview" },
     },
     config = function()
-      -- WSL2: 使用 Windows 浏览器打开
       if vim.fn.has("wsl") == 1 then
-        vim.g.mkdp_browser = "wslview"
+        vim.g.mkdp_wsl_opener = vim.fn.executable("wslview") == 1 and "wslview"
+          or "/mnt/c/Windows/explorer.exe"
+        vim.cmd([[
+          function! MkdpWslOpen(url) abort
+            call jobstart([g:mkdp_wsl_opener, a:url])
+          endfunction
+        ]])
+        vim.g.mkdp_browserfunc = "MkdpWslOpen"
       end
     end,
   },
