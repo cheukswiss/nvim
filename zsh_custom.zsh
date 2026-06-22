@@ -38,17 +38,18 @@ function vis() {
   fi
 }
 
-# tmux 快速进入
+# tmux alias attach/new
 function t() {
-  if [ -n "$TMUX" ]; then
-    echo "Already inside tmux."
-    return 1
-  fi
   local session="${1:-main}"
-  tmux attach -t "$session" 2>/dev/null || tmux new -s "$session"
+  if [ -n "$TMUX" ]; then
+    tmux has-session -t "$session" 2>/dev/null || tmux new-session -d -s "$session"
+    tmux switch-client -t "$session"
+  else
+    tmux new-session -A -s "$session"
+  fi
 }
 
-# Yazi 文件管理器
+# Yazi
 function y() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
   command yazi "$@" --cwd-file="$tmp"
@@ -57,8 +58,8 @@ function y() {
   rm -f -- "$tmp"
 }
 
-lg()
-{
+# LazyGit
+function lg() {
     export LAZYGIT_NEW_DIR_FILE=~/.lazygit/newdir
 
     lazygit "$@"
@@ -70,7 +71,6 @@ lg()
 }
 
 # ── zsh 插件 ────────────────────────────────
-# 放在最后：语法高亮要求在所有 zle 小部件注册之后 source
 _zsh_syntax_hl="$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [ -f "$_zsh_syntax_hl" ] && source "$_zsh_syntax_hl"
 unset _zsh_syntax_hl
