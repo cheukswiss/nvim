@@ -7,9 +7,9 @@ return {
     config = function()
       local ts = require("nvim-treesitter")
       local parsers = {
-        "bash", "c", "cpp", "doxygen", "go", "html", "javascript", "json", "lua",
-        "markdown", "markdown_inline", "python", "regex", "tsx",
-        "typescript", "vim", "vimdoc", "yaml",
+        "bash", "c", "cpp", "css", "doxygen", "go", "html", "javascript", "json",
+        "json5", "lua", "markdown", "markdown_inline", "python", "regex", "scss",
+        "tsx", "typescript", "vim", "vimdoc", "yaml",
       }
       local installed = ts.get_installed()
       local missing = vim.tbl_filter(function(p)

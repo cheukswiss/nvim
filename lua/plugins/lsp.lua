@@ -12,6 +12,10 @@ local servers = {
   clangd = "clangd",
   rust_analyzer = "rust-analyzer",
   bashls = "bash-language-server",
+  jsonls = "json-lsp",
+  yamlls = "yaml-language-server",
+  cssls = "css-lsp",
+  html = "html-lsp",
 }
 
 return {
@@ -43,12 +47,34 @@ return {
     keys = {
       { "<leader>cf", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, desc = "Format buffer" },
     },
-    opts = {
-      formatters_by_ft = {
-        c = { "clang-format" },
-        cpp = { "clang-format" },
-      },
-    },
+    opts = function()
+      -- prettier 覆盖前端系：只跑第一个可用的（prettierd 优先，回退 prettier）
+      local prettier = { "prettierd", "prettier", stop_after_first = true }
+      return {
+        formatters_by_ft = {
+          c = { "clang-format" },
+          cpp = { "clang-format" },
+          css = prettier,
+          scss = prettier,
+          less = prettier,
+          html = prettier,
+          json = prettier,
+          jsonc = prettier,
+          yaml = prettier,
+          markdown = prettier,
+          javascript = prettier,
+          javascriptreact = prettier,
+          typescript = prettier,
+          typescriptreact = prettier,
+        },
+        -- 仅当项目存在 prettier 配置时才启用 prettier；
+        -- 无配置 → prettier 视为不可用 → <leader>cf 的 lsp_format=fallback 回退 LSP 中性格式化
+        formatters = {
+          prettierd = { require_cwd = true },
+          prettier = { require_cwd = true },
+        },
+      }
+    end,
   },
 
   {
@@ -78,6 +104,8 @@ return {
       -- linter 名与 nvim-lint linters_by_ft 保持一致，避免两份清单漂移
       local tools = {
         "clang-format",   -- conform: c/cpp
+        "prettierd",      -- conform: 前端系（json/yaml/css/html/md/js/ts）
+        "prettier",       -- conform: prettierd 回退
         "shellcheck",     -- nvim-lint: sh/bash
         "ruff",           -- nvim-lint: python
         "eslint_d",       -- nvim-lint: javascript/typescript
@@ -96,6 +124,7 @@ return {
     dependencies = {
       "williamboman/mason.nvim",
       "saghen/blink.cmp",
+      { "b0o/SchemaStore.nvim", lazy = true, version = false },
     },
     config = function()
       vim.diagnostic.config({
@@ -152,11 +181,37 @@ return {
         },
       })
 
+      -- json/yaml：SchemaStore 提供 schema 校验/补全；
+      -- LSP 自带格式化保持默认开启，作为项目无 prettier 配置时的中性回退
+      vim.lsp.config("jsonls", {
+        settings = {
+          json = {
+            schemas = require("schemastore").json.schemas(),
+            validate = { enable = true },
+          },
+        },
+      })
+      vim.lsp.config("yamlls", {
+        settings = {
+          yaml = {
+            schemaStore = { enable = false, url = "" },
+            schemas = require("schemastore").yaml.schemas(),
+          },
+        },
+      })
+
+      -- mason 包名 ≠ 可执行名的 server（vscode 系），enable 前据此查 PATH
+      local server_bin = {
+        jsonls = "vscode-json-language-server",
+        cssls = "vscode-css-language-server",
+        html = "vscode-html-language-server",
+      }
+
       -- 只 enable 二进制已在 PATH 的 server，避免首次启动时 mason 还在下载
       local function enable_available()
         local available = {}
         for name, pkg in pairs(servers) do
-          if vim.fn.executable(pkg) == 1 then
+          if vim.fn.executable(server_bin[name] or pkg) == 1 then
             table.insert(available, name)
           end
         end
