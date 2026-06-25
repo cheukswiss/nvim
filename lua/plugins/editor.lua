@@ -110,6 +110,14 @@ return {
       require("nvim-tree").setup({
         -- 不自动在树中定位当前文件；需要时用 tf 手动定位
         update_focused_file = { enable = false },
+        view = {
+          -- 自适应宽度：随最长文件名在 [30, 60] 区间内自动伸缩
+          width = {
+            min = 30,
+            max = 60,
+            padding = 1,
+          },
+        },
       })
     end,
   },
