@@ -39,12 +39,23 @@ return {
         provider = "openai_fim_compatible",
         request_timeout = 5,
         virtualtext = {
-          -- 白名单：仅在编程语言文件里自动触发，避免把 .env / 凭证 / 提交信息等
-          -- 内容发往 DeepSeek（这些文件 filetype 为空或非下列项，不会触发）
+          -- 白名单模式，避免敏感类似文件补全
           auto_trigger_ft = {
-            "lua", "python", "c", "cpp", "go", "rust",
+            -- 脚本 / 系统语言
+            "lua", "python", "c", "cpp", "objc", "objcpp", "go", "rust", "zig",
+            "java", "kotlin", "scala", "groovy", "cs", "fsharp", "swift", "dart",
+            "ruby", "perl", "php", "elixir", "erlang", "haskell", "ocaml",
+            "clojure", "julia", "r", "nim", "fortran", "gdscript",
+            -- Web 前端
             "javascript", "typescript", "javascriptreact", "typescriptreact",
-            "sh", "bash", "json", "yaml", "html", "css", "vim",
+            "vue", "svelte", "astro", "html", "css", "scss", "sass", "less",
+            "glsl", "wgsl",
+            -- Shell / 构建
+            "sh", "bash", "zsh", "fish", "make", "cmake", "ninja", "dockerfile",
+            "terraform", "hcl", "nix", "just",
+            -- 数据 / 标记 / 配置
+            "json", "jsonc", "json5", "yaml", "toml", "xml", "proto", "graphql",
+            "sql", "markdown", "tex", "bib", "typst", "vim", "dts",
           },
           show_on_completion_menu = true, -- blink 菜单可见时也显示灰字，否则会被抑制
           keymap = {
