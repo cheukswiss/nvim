@@ -9,6 +9,7 @@ return {
     "lewis6991/gitsigns.nvim",
     event = "VeryLazy",
     opts = {
+      current_line_blame = true,                 -- 默认显示当前行 blame
       current_line_blame_opts = { delay = 500 }, -- 默认 1000 太慢
       preview_config = { border = "rounded" },
       on_attach = function(buffer)
