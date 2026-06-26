@@ -61,18 +61,31 @@ return {
     end,
   },
 
-  -- 命令行浮窗（noice，仅接管 cmdline；消息/通知保持原生）
+  -- 右上角通知弹窗：渲染样式与动画（noice 会把通知路由到这里）
+  {
+    "rcarriga/nvim-notify",
+    opts = {
+      stages = "fade_in_slide_out",
+      render = "default",
+      timeout = 3000,
+      top_down = true,
+      max_width = 60,
+      background_colour = "#141414",
+    },
+  },
+
+  -- 命令行浮窗 + 通知接管（noice：cmdline 居中浮窗；通知转交 nvim-notify）
   {
     "folke/noice.nvim",
     event = "VeryLazy",
-    dependencies = { "MunifTanjim/nui.nvim" },
+    dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
     opts = {
       cmdline = { enabled = true, view = "cmdline_popup" },
-      messages = { enabled = false },   -- 消息区
-      notify = { enabled = false },     -- 通知
-      popupmenu = { enabled = true },   -- 命令行候选用 noice 浮窗（配合 command_palette 居中）；插入态补全仍由 blink 独立处理
+      messages = { enabled = true },
+      notify = { enabled = true },
+      popupmenu = { enabled = true },
       lsp = { progress = { enabled = false } },
-      presets = { command_palette = true }, -- 命令行 + 候选靠上居中排布
+      presets = { command_palette = true },
     },
   },
 }
