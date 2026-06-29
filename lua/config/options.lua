@@ -84,16 +84,46 @@ opt.autochdir = false
 -- 剪贴板设置（使用系统剪贴板 + 寄存器）
 opt.clipboard = "unnamedplus"
 
+-- 是否 SSH 远程会话：tmux 里 SSH_TTY/SSH_CONNECTION 不会传播到老 pane 启动的
+-- 进程，故进程环境缺失时回退查 tmux session 环境（update-environment 默认含
+-- SSH_CONNECTION，attach 时刷新；SSH_TTY 不在该列表，只能靠 SSH_CONNECTION）。
+local remote = vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
+if not remote and vim.env.TMUX then
+  local out = vim.fn.system({ "tmux", "show-environment", "SSH_CONNECTION" })
+  remote = vim.v.shell_error == 0 and out:match("^SSH_CONNECTION=") ~= nil
+end
+
 -- vscode-neovim：用其内置 provider 同步 VS Code 剪贴板，跳过 win32yank
 if vim.g.vscode then
   vim.g.clipboard = vim.g.vscode_clipboard
-end
+
+-- SSH 远程：复制走 OSC 52 经终端转义序列透传到本地电脑（依赖 tmux
+-- set-clipboard on 中继）；win32yank 在远程访问宿主机剪贴板会被拒。
+-- 粘贴不走 OSC 52 读回——多数终端禁止读回，内置 "osc52" 会让每次 p
+-- 发查询并卡 1s 弹提示；这里用会话内缓存供 p 取用（nvim 内 yy/p 照常）。
+-- 跨机器粘贴本地剪贴板内容请用终端原生粘贴（Ctrl+Shift+V / 右键），
+-- 它走 bracketed paste、不经寄存器，不受此影响。
+elseif remote then
+  local copy_fn = require("vim.ui.clipboard.osc52").copy("+")
+  local cache = { { "" }, "v" }  -- { lines, regtype }，记住本会话最近一次系统复制
+  local function set(lines, regtype)
+    cache = { lines, regtype }
+    copy_fn(lines)
+  end
+  local function get()
+    return cache
+  end
+  vim.g.clipboard = {
+    name = "osc52-copy-only",
+    copy = { ["+"] = set, ["*"] = set },
+    paste = { ["+"] = get, ["*"] = get },
+  }
 
 -- WSL：用 win32yank.exe 桥接 Windows 剪贴板
 -- exe 随本仓库分发（stdpath("config")/win32yank.exe），不依赖 PATH；
 -- 命令用列表形式（不过 shell，路径含空格也安全）。
 -- 仅在 WSL 且 exe 可执行时启用，避免污染原生 Linux / macOS 的 provider。
-if not vim.g.vscode and vim.fn.has("wsl") == 1 then
+elseif vim.fn.has("wsl") == 1 then
   local win32yank = vim.fn.stdpath("config") .. "/bin/win32yank.exe"
   if vim.fn.executable(win32yank) == 1 then
     vim.g.clipboard = {
