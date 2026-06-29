@@ -7,7 +7,21 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- 退出 Neovim 时自动保存会话到工程根的 Session.vim
--- 沿用 <leader>ss 的约定，tmux-resurrect 用 -S 恢复
+local editor_filetypes = {
+  gitcommit = true,
+  gitrebase = true,
+  hgcommit = true,
+  mail = true,
+  crontab = true,
+}
+
+-- nvim 内置 filetype 覆盖不到的临时文件名
+local editor_basenames = {
+  ["SQUASH_MSG"] = true,
+  ["PULLREQ_EDITMSG"] = true,
+  ["addp-hunk-edit.diff"] = true,
+}
+
 vim.api.nvim_create_autocmd("VimLeavePre", {
   group = vim.api.nvim_create_augroup("auto_save_session", { clear = true }),
   callback = function()
@@ -15,14 +29,19 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
       return
     end
 
+    -- 有真实文件则保存，实例仅剩 git 临时 buffer（一次性 $EDITOR）时跳过
     local has_file = false
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
       if vim.api.nvim_buf_is_loaded(buf)
         and vim.bo[buf].buflisted
-        and vim.bo[buf].buftype == ""
-        and vim.api.nvim_buf_get_name(buf) ~= "" then
-        has_file = true
-        break
+        and vim.bo[buf].buftype == "" then
+        local name = vim.api.nvim_buf_get_name(buf)
+        if name ~= ""
+          and not (editor_filetypes[vim.bo[buf].filetype]
+            or editor_basenames[vim.fn.fnamemodify(name, ":t")]) then
+          has_file = true
+          break
+        end
       end
     end
 
