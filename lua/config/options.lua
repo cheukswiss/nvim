@@ -27,6 +27,15 @@ vim.cmd("nohlsearch")
 opt.compatible = false
 vim.cmd("filetype plugin indent on")
 
+vim.filetype.add({
+  filename = {
+    [".config"] = "make",
+  },
+  pattern = {
+    [".*_defconfig"] = "make",
+  },
+})
+
 -- 编码设置
 opt.encoding = "utf-8"
 
