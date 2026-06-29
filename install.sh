@@ -12,8 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ZSHRC="$HOME/.zshrc"
 TMUX_CONF="$HOME/.tmux.conf"
 TPM_DIR="$HOME/.tmux/plugins/tpm"
-# 独立目录，不强依赖 oh-my-zsh；zsh_custom.zsh 会 source 这里的插件
-ZSH_PLUGIN_DIR="$HOME/.zsh/plugins"
+ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # ── 平台检测 ────────────────────────────────
 # DEPS 条目格式: "<包名> <命令名>"（ripgrep/fd 的包名与二进制名不一致）
@@ -101,13 +100,17 @@ tmux_status() {
 }
 
 zsh_status() {
-  local ok=0 total=2
-  # 检查 source line
+  local ok=0 total=4
   if [ -f "$ZSHRC" ] && grep -qF "zsh_custom.zsh" "$ZSHRC"; then
     ok=$((ok + 1))
   fi
-  # 检查 zsh-syntax-highlighting
-  if [ -d "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting" ]; then
+  if [ -f "$ZSHRC" ] && grep -qF "zsh_custom.pre.zsh" "$ZSHRC"; then
+    ok=$((ok + 1))
+  fi
+  if [ -d "$ZSH_CUSTOM_DIR/plugins/zsh-syntax-highlighting" ]; then
+    ok=$((ok + 1))
+  fi
+  if [ -x "$HOME/.fzf/bin/fzf" ]; then
     ok=$((ok + 1))
   fi
   if (( ok == total )); then echo "done"
@@ -310,14 +313,56 @@ install_zsh() {
     warn "未找到 ~/.zshrc，请手动添加: $SOURCE_LINE"
   fi
 
-  # zsh 插件（独立目录，由 zsh_custom.zsh 直接 source，不依赖 oh-my-zsh）
-  if [ -d "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting" ]; then
-    skip "zsh-syntax-highlighting 已安装"
+  # pre 文件 source（必须在 `source $ZSH/oh-my-zsh.sh` 之前，OMZ 才能读到 plugins 数组）
+  local PRE_SOURCE_LINE='[ -f "$HOME/.config/nvim/zsh_custom.pre.zsh" ] && source "$HOME/.config/nvim/zsh_custom.pre.zsh"'
+  if [ -f "$ZSHRC" ] && grep -qF "zsh_custom.pre.zsh" "$ZSHRC"; then
+    skip "zshrc 中已包含 zsh_custom.pre.zsh"
+  elif [ -f "$ZSHRC" ] && grep -qF 'source $ZSH/oh-my-zsh.sh' "$ZSHRC"; then
+    # 插到 oh-my-zsh.sh 之前；cat> 写穿软链（不用 mv，免得软链被换成普通文件）；grep 复核插入成功（set -e 不拦 awk 失败）
+    local tmp
+    tmp="$(mktemp)"
+    if awk -v line="$PRE_SOURCE_LINE" '
+      /source \$ZSH\/oh-my-zsh\.sh/ && !ins {
+        print "# 插件清单与 OMZ 前置配置（由 nvim 仓库管理）"
+        print line
+        print ""
+        ins = 1
+      }
+      { print }
+    ' "$ZSHRC" > "$tmp" && grep -qF "zsh_custom.pre.zsh" "$tmp"; then
+      cat "$tmp" > "$ZSHRC"
+      rm -f "$tmp"
+      info "已在 oh-my-zsh.sh 之前插入 zsh_custom.pre.zsh source"
+    else
+      rm -f "$tmp"
+      err "插入 zsh_custom.pre.zsh source 失败，.zshrc 未改动"
+    fi
   else
-    mkdir -p "$ZSH_PLUGIN_DIR"
+    warn "未找到 'source \$ZSH/oh-my-zsh.sh'，请手动在其前添加: $PRE_SOURCE_LINE"
+  fi
+
+  # zsh-syntax-highlighting（装到 OMZ custom 目录，由 pre.zsh 的 plugins 数组经 OMZ 加载）
+  if [ -d "$ZSH_CUSTOM_DIR/plugins/zsh-syntax-highlighting" ]; then
+    skip "zsh-syntax-highlighting 已安装"
+  elif ! command -v git &>/dev/null; then
+    warn "git 未安装，跳过 zsh-syntax-highlighting"
+  else
+    mkdir -p "$ZSH_CUSTOM_DIR/plugins"
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-      "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
+      "$ZSH_CUSTOM_DIR/plugins/zsh-syntax-highlighting"
     info "zsh-syntax-highlighting 已安装"
+  fi
+
+  # fzf（git 安装到 ~/.fzf，只下载二进制）
+  if [ -x "$HOME/.fzf/bin/fzf" ]; then
+    skip "fzf 已安装"
+  elif ! command -v git &>/dev/null; then
+    warn "git 未安装，跳过 fzf"
+  elif [ -e "$HOME/.fzf" ] && [ ! -d "$HOME/.fzf/.git" ]; then
+    warn "$HOME/.fzf 已存在但不是 git 仓库，跳过 fzf（请手动检查后重试）"
+  else
+    [ -d "$HOME/.fzf/.git" ] || git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+    run_install "$HOME/.fzf/install --bin（下载 fzf 二进制）" "fzf 安装完成" "$HOME/.fzf/install" --bin
   fi
 }
 

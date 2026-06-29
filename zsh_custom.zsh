@@ -1,11 +1,11 @@
 # ══════════════════════════════════════════════
-#  自定义 ZSH 配置 — 由 nvim 仓库管理
-#  在 ~/.zshrc 末尾 source 本文件
+#              Costom ZSH config
+#
+#  Source this file at the end of your ~/.zshrc
 # ══════════════════════════════════════════════
 
-# PATH：把 install.sh 安装的用户级目录加进来（typeset -U 去重，目录存在才加）
 typeset -U path
-for _p in "$HOME/.local/bin" "$HOME/.cargo/bin" "$HOME/go/bin"; do
+for _p in "$HOME/.local/bin" "$HOME/.cargo/bin" "$HOME/go/bin" "$HOME/.fzf/bin"; do
   [ -d "$_p" ] && path=("$_p" $path)
 done
 unset _p
@@ -17,7 +17,6 @@ alias vim='nvim'
 
 unsetopt share_history
 
-# ── 别名 ────────────────────────────────────
 if command -v eza &>/dev/null; then
   alias ll='eza -lF'
   alias la='eza -a'
@@ -28,8 +27,7 @@ elif command -v exa &>/dev/null; then
   alias l='exa'
 fi
 
-# ── 工具函数 ────────────────────────────────
-# vis：恢复当前目录的 nvim session
+#  Session restore with nvim
 function vis() {
   if [ -f Session.vim ]; then
     nvim -S Session.vim "$@"
@@ -38,7 +36,7 @@ function vis() {
   fi
 }
 
-# tmux alias attach/new
+# Tmux alias attach/new
 function t() {
   local session="${1:-main}"
   if [ -n "$TMUX" ]; then
@@ -70,8 +68,25 @@ function lg() {
     fi
 }
 
-# ── zsh 插件 ────────────────────────────────
-_zsh_syntax_hl="$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-[ -f "$_zsh_syntax_hl" ] && source "$_zsh_syntax_hl"
-unset _zsh_syntax_hl
+# fzf — Ctrl-R 历史 / Ctrl-T 文件 / Alt-C 目录
+if command -v fzf >/dev/null 2>&1; then
+  _fd=
+  if [[ -n ${commands[fd]} ]]; then _fd=fd
+  elif [[ -n ${commands[fdfind]} ]]; then _fd=fdfind
+  fi
+  if [[ -n $_fd ]]; then
+    export FZF_DEFAULT_COMMAND="$_fd --type f --hidden --exclude .git"
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_COMMAND="$_fd --type d --hidden --exclude .git"
+  fi
+  unset _fd
+  export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+  if _fzf_init=$(fzf --zsh 2>/dev/null); then
+    eval "$_fzf_init" 2>/dev/null
+  elif [ -d "$HOME/.fzf/shell" ]; then
+    source "$HOME/.fzf/shell/completion.zsh"   2>/dev/null
+    source "$HOME/.fzf/shell/key-bindings.zsh" 2>/dev/null
+  fi
+  unset _fzf_init
+fi
 
