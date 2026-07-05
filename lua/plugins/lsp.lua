@@ -132,6 +132,10 @@ return {
           prefix = "●",
           spacing = 4,
           source = "if_many",
+          -- 行内只铺 Warning/Error；Info/Hint（如 shellcheck SC2086
+          -- "Double quote..."）不进行内文字，避免 vendor 脚本满屏遮挡代码。
+          -- gutter 标记与下划线仍覆盖全部严重度，可 gh 悬停/]d 跳转看详情。
+          severity = { min = vim.diagnostic.severity.WARN },
         },
         signs = true,
         underline = true,
@@ -197,6 +201,15 @@ return {
             schemaStore = { enable = false, url = "" },
             schemas = require("schemastore").yaml.schemas(),
           },
+        },
+      })
+
+      -- bashls 内置 shellcheck 集成会和 nvim-lint 的 shellcheck 各报一遍，
+      -- 造成诊断翻倍。关掉 bashls 这份（shellcheckPath=""），shellcheck 只由
+      -- nvim-lint 跑；bashls 仍提供补全/跳转/hover 等 LSP 能力。
+      vim.lsp.config("bashls", {
+        settings = {
+          bashIde = { shellcheckPath = "" },
         },
       })
 
