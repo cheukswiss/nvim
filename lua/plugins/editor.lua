@@ -59,7 +59,14 @@ return {
           vim.fn.setreg("v", save_reg, save_type)
           require("telescope.builtin").grep_string({ search = text })
         end, mode = "x", desc = "Grep selection" },
+      { "<leader>fG", function()
+          vim.ui.input({ prompt = "File type (rg type, e.g. cpp/lua/py, empty=all): " }, function(ft)
+            if ft == nil then return end
+            require("telescope.builtin").live_grep(ft ~= "" and { type_filter = ft } or {})
+          end)
+        end, desc = "Live grep (by filetype)" },
       { "<leader>fb", "<cmd>Telescope buffers<cr>",                 desc = "Buffers" },
+      { "<leader>fu", "<cmd>Telescope resume<cr>",                  desc = "Resume last picker" },
       { "<leader>fh", "<cmd>Telescope help_tags<cr>",               desc = "Help tags" },
       { "<leader>/",  "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Search in buffer" },
       -- LSP / 诊断
@@ -76,6 +83,7 @@ return {
       telescope.setup({
         defaults = {
           path_display = { "smart" },
+          cache_picker = { num_pickers = 10 },
           mappings = {
             i = {
               ["<C-j>"] = "move_selection_next",
