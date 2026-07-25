@@ -49,9 +49,13 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
       return
     end
 
+    local session = vim.fn.getcwd() .. "/Session.vim"
+    if vim.fn.filereadable(session) == 0 then
+      return
+    end
+
     pcall(vim.cmd, "NvimTreeClose")
 
-    local session = vim.fn.getcwd() .. "/Session.vim"
     vim.cmd("mksession! " .. vim.fn.fnameescape(session))
   end,
 })
