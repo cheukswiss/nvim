@@ -21,8 +21,24 @@ return {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-mini/mini.icons" },
     config = function()
+      local function macro_recording()
+        local reg = vim.fn.reg_recording()
+        return reg == "" and "" or "recording @" .. reg
+      end
+
       require("lualine").setup({
         options = { theme = "vscode" },
+        sections = {
+          lualine_x = {{ "%S", padding = 1 }, macro_recording, "encoding", "fileformat", "filetype" },
+        },
+      })
+
+      vim.api.nvim_create_autocmd({ "RecordingEnter", "RecordingLeave" }, {
+        callback = function()
+          vim.schedule(function()
+            require("lualine").refresh({ place = { "statusline" } })
+          end)
+        end,
       })
     end,
   },
@@ -81,7 +97,7 @@ return {
     dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
     opts = {
       cmdline = { enabled = true, view = "cmdline_popup" },
-      messages = { enabled = false },
+      messages = { enabled = true },
       notify = { enabled = true },
       popupmenu = { enabled = true },
       lsp = { progress = { enabled = false } },
