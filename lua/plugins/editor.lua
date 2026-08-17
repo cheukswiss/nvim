@@ -69,6 +69,7 @@ return {
       { "<leader>fu", "<cmd>Telescope resume<cr>",                  desc = "Resume last picker" },
       { "<leader>fh", "<cmd>Telescope help_tags<cr>",               desc = "Help tags" },
       { "<leader>/",  "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Search in buffer" },
+      { "<leader>?",  function() require("telescope.builtin").live_grep({ grep_open_files = true }) end, desc = "Search in open buffers" },
       -- LSP / 诊断
       { "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>",    desc = "Document symbols" },
       { "<leader>fS", "<cmd>Telescope lsp_workspace_symbols<cr>",   desc = "Workspace symbols" },
@@ -122,7 +123,7 @@ return {
           -- 自适应宽度：随最长文件名在 [30, 60] 区间内自动伸缩
           width = {
             min = 30,
-            max = 60,
+            max = 40,
             padding = 1,
           },
         },

@@ -85,6 +85,8 @@ bash ~/.config/nvim/install.sh tmux zsh # 指定模块
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | 终端内 Markdown 渲染 |
 | [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) | 浏览器 Markdown 预览 |
 | [codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim) | AI 助手：对话 / 行内重构 / agent（接 DeepSeek） |
+| [image.nvim](https://github.com/3rd/image.nvim) | 终端内图片预览（sixel 后端 + magick_cli，打开图片文件自动渲染） |
+| [pantran.nvim](https://github.com/potamides/pantran.nvim) | 机器翻译（Google Web 引擎，免 key，默认英译中） |
 
 AI 补全通过 [minuet-ai.nvim](https://github.com/milanglacier/minuet-ai.nvim) 接入 DeepSeek，以 ghost text（行内灰字）展示。API key 从配置目录下的 `.env`（`DEEPSEEK_API_KEY=...`，已被 `.gitignore` 忽略）读取，由 `lua/config/env.lua` 在启动时注入环境变量。后端、模型、键位见 `lua/plugins/completion.lua`。
 
@@ -194,11 +196,14 @@ Leader 键为 `Space`。
 | `<leader>fr` | Normal | 最近打开的文件 |
 | `<leader>fg` | Normal | 全局内容搜索 |
 | `<leader>fg` | Visual | 用选中文本做全局内容搜索（grep_string） |
+| `<leader>fG` | Normal | 按文件类型内容搜索（先输入 rg type，如 cpp/lua/py，留空=全部） |
+| `<leader>fu` | Normal | 恢复上次 picker（`Telescope resume`，含已输入的搜索词） |
 | `<leader>fb` | Normal | 切换 Buffer |
 | `<leader>fh` | Normal | 搜索帮助文档 |
 | `<leader>ft` | Normal | 搜索 TODO/FIXME 等标记（TodoTelescope） |
 | `]t` / `[t` | Normal | 跳到下/上一个 TODO 注释 |
 | `<leader>/` | Normal | 当前 Buffer 内搜索 |
+| `<leader>?` | Normal | 所有已打开 Buffer 内搜索 |
 | `<leader>fs` | Normal | 文档符号 |
 | `<leader>fS` | Normal | 工作区符号 |
 | `<leader>fd` | Normal | 诊断列表 |
@@ -207,6 +212,8 @@ Leader 键为 `Space`。
 | `<leader>gb` | Normal | Git 分支 |
 
 Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
+
+已开启 `cache_picker`（缓存最近 10 个 picker）：`<leader>fu` 或 `:Telescope pickers` 可恢复到之前的搜索状态。
 
 ### 文件树 (nvim-tree)
 
