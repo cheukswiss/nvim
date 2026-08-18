@@ -169,3 +169,10 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
+-- 浮动窗口边框配色（LSP hover、诊断浮窗等）
+-- 主题默认未给 FloatBorder 设置 fg，边框与背景几乎融为一体，这里显式高亮
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#569CD6", bg = "#202020" })
+  end,
+})
