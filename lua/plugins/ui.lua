@@ -19,17 +19,32 @@ return {
   -- 状态栏
   {
     "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-mini/mini.icons" },
+    dependencies = { "nvim-mini/mini.icons", "stevearc/aerial.nvim" },
     config = function()
       local function macro_recording()
         local reg = vim.fn.reg_recording()
         return reg == "" and "" or "recording @" .. reg
       end
 
+      -- local function clipboard_provider()
+      --   local cb = vim.g.clipboard
+      --   return type(cb) == "table" and cb.name or ""
+      -- end
+
       require("lualine").setup({
         options = { theme = "vscode" },
         sections = {
-          lualine_x = {{ "%S", padding = 1 }, macro_recording, "encoding", "fileformat", "filetype" },
+          lualine_c = { "filename", "aerial" },
+          lualine_x = {
+            "searchcount",
+            "selectioncount",
+            macro_recording,
+            -- clipboard_provider,
+            "lsp_status",
+            "encoding",
+            "fileformat",
+            "filetype",
+          },
         },
       })
 
@@ -97,7 +112,9 @@ return {
     dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
     opts = {
       cmdline = { enabled = true, view = "cmdline_popup" },
-      messages = { enabled = true },
+      -- view_search 默认把搜索计数以虚拟文本贴在光标行尾，抢眼且挤占正文，
+      -- 关掉后交给 lualine 的 searchcount 组件在状态栏显示。
+      messages = { enabled = true, view_search = false },
       notify = { enabled = true },
       popupmenu = { enabled = true },
       lsp = { progress = { enabled = false } },

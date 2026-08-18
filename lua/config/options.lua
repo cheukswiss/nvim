@@ -11,10 +11,10 @@ opt.wrap = false
 opt.showcmd = true
 opt.wildmenu = true
 -- noice 把 : 命令行改成居中浮窗，原生命令行区域常年空着仍占一行，故收为 0；
--- 代价是未点完的按键序列没地方显示，用 showcmdloc 改挂到状态栏（lualine 里
--- 有对应的 %S 组件承接），消息则由 noice 路由到右上角 nvim-notify 弹窗。
+-- 消息由 noice 路由到右上角 nvim-notify 弹窗，可视模式选中量由 lualine 的
+-- selectioncount 组件承接。未点完的按键序列（showcmd）就此没有显示位置：
+-- 试过 showcmdloc=statusline + lualine %S 组件，实际用不上，已一并去掉。
 opt.cmdheight = 0
-opt.showcmdloc = "statusline"
 opt.signcolumn = "yes"     -- 符号栏常驻，避免行号跳动
 opt.winborder = "rounded"  -- 浮动窗口默认圆角边框（LSP hover、诊断浮窗等统一）
 opt.colorcolumn = "80,100" -- 80/100 列竖线标尺（对应 VSCode editor.rulers）
