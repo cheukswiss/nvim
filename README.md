@@ -248,6 +248,8 @@ Telescope 内部快捷键：`<C-j>`/`<C-k>` 上下移动，`<Esc>` 关闭。
 |--------|------|------|
 | `]c` | Normal | 下一个 hunk |
 | `[c` | Normal | 上一个 hunk |
+| `]s` | Normal | 下一个已 staged 的 hunk |
+| `[s` | Normal | 上一个已 staged 的 hunk |
 | `<leader>ip` | Normal | 预览 hunk |
 | `<leader>is` | Normal/Visual | Stage hunk |
 | `<leader>ir` | Normal/Visual | Reset hunk |

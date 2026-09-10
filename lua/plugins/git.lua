@@ -36,6 +36,10 @@ return {
           end
         end, "Prev hunk")
 
+        -- 只在已 staged 的 hunk 之间跳转（对应 ]c/[c 的 staged 版本）
+        map("n", "]s", function() gs.nav_hunk("next", { target = "staged" }) end, "Next staged hunk")
+        map("n", "[s", function() gs.nav_hunk("prev", { target = "staged" }) end, "Prev staged hunk")
+
         -- ── Hunk 操作（前缀 <leader>i）──────────────────────────────
         map("n", "<leader>ip", gs.preview_hunk,    "Preview hunk")
         map("n", "<leader>is", gs.stage_hunk,      "Stage hunk")
