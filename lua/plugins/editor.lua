@@ -83,7 +83,9 @@ return {
       local telescope = require("telescope")
       telescope.setup({
         defaults = {
-          path_display = { "smart" },
+          path_display = {
+            filename_first = { reverse_directories = true },
+          },
           cache_picker = { num_pickers = 10 },
           mappings = {
             i = {
