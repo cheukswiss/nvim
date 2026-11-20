@@ -53,6 +53,7 @@ opt.encoding = "utf-8"
 
 -- 编辑器行为设置
 opt.scrolloff = 5
+opt.jumpoptions:append("view") -- 切回 buffer 时恢复原来的视口
 opt.textwidth = 0
 opt.indentexpr = ""
 opt.backspace = { "indent", "eol", "start" }
