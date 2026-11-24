@@ -67,8 +67,10 @@ return {
     config = function()
       require("bufferline").setup({
         options = {
-          close_command = "Bdelete! %d",
-          right_mouse_command = "Bdelete! %d",
+          truncate_names = false,
+          tab_size = 1,
+          close_command = "Bdelete %d",
+          right_mouse_command = "Bdelete %d",
           offsets = {
             {
               filetype = "NvimTree",

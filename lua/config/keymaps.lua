@@ -191,6 +191,9 @@ map("n", "<A-[>", ":BufferLineCyclePrev<CR>")
 map("n", "<A-}>", ":BufferLineMoveNext<CR>") -- M-S-] 右移
 map("n", "<A-{>", ":BufferLineMovePrev<CR>") -- M-S-[ 左移
 
+-- 固定或取消固定当前 Buffer
+map("n", "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", { desc = "Toggle buffer pin" })
+
 -- 新建空 buffer（类似新标签页；tmux 的 Alt+Shift+T 新建 window，二者分层）
 map("n", "<A-t>", ":enew<CR>", { desc = "New empty buffer" })
 
