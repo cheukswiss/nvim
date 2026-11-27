@@ -166,8 +166,9 @@ return {
           map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
           map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
           map("n", "<leader>cR", "<cmd>LspRestart<cr>", "Restart LSP client")
-          map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, "Prev diagnostic")
-          map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic")
+          -- 跳转后自动弹浮窗显示完整诊断内容（等同于跳过去再按 <C-w>d）
+          map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, "Prev diagnostic")
+          map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, "Next diagnostic")
 
           -- inlay hints（参数名/类型等）：服务端支持就开启，<leader>th 切换
           local client = vim.lsp.get_client_by_id(event.data.client_id)

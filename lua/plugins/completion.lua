@@ -13,6 +13,8 @@ return {
       "rafamadriz/friendly-snippets",
     },
     opts = {
+      -- 回车确认选中项；未选中时回车照常换行
+      keymap = { preset = "enter" },
       appearance = { nerd_font_variant = "mono" },
       sources = {
         default = { "lsp", "path", "snippets", "buffer" },
