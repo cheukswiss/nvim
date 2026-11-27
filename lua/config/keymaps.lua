@@ -15,19 +15,19 @@ end
 -- =========================
 
 -- 插入模式下jj退出到normal模式
-map("i", "jj", "<ESC>")
+map("i", "jj", "<ESC>", { desc = "Exit insert mode" })
 
 -- 增强移动键（normal + visual；x 模式不影响 operator-pending，如 dH 仍可用）
-map({ "n", "x" }, "J", "5j")
-map({ "n", "x" }, "K", "5k")
-map({ "n", "x" }, "H", "^")
-map({ "n", "x" }, "L", "$")
+map({ "n", "x" }, "J", "5j", { desc = "Down 5 lines" })
+map({ "n", "x" }, "K", "5k", { desc = "Up 5 lines" })
+map({ "n", "x" }, "H", "^", { desc = "Line start (first non-blank)" })
+map({ "n", "x" }, "L", "$", { desc = "Line end" })
 
 -- leader+; 进入命令模式
-map("n", "<leader>;", ":")
+map("n", "<leader>;", ":", { desc = "Command mode" })
 
 -- 取消搜索高亮
-map("n", "<leader><CR>", ":nohlsearch<CR>")
+map("n", "<leader><CR>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
 
 -- * 原地高亮光标下的词：只设搜索高亮、光标不动（之后用 n/N 跳转）
 map("n", "*", function()
@@ -58,8 +58,8 @@ map("x", "*", function()
 end, { desc = "Search visual selection" })
 
 -- 16进制编辑
-map("n", "<leader>xd", ":%!xxd<CR>")
-map("n", "<leader>nxd", ":%!xxd -r<CR>")
+map("n", "<leader>xd", ":%!xxd<CR>", { desc = "Hex dump (xxd)" })
+map("n", "<leader>nxd", ":%!xxd -r<CR>", { desc = "Revert hex dump (xxd -r)" })
 
 -- s 键交给 flash.nvim 做快速跳转（见 plugins/editor.lua），重新映射保存和退出
 -- 有文件名 → 直接 :w；无名 buffer（如 <A-t> :enew 新建）→ 预填 :saveas <cwd>/
@@ -71,8 +71,8 @@ map("n", "S", function()
         vim.cmd("write")
     end
 end, { desc = "Save (unnamed buffer → save-as)" })
-map("n", "Q", ":q<CR>")
-map("n", "E", ":e!<CR>")
+map("n", "Q", ":q<CR>", { desc = "Quit window" })
+map("n", "E", ":e!<CR>", { desc = "Reload file (discard changes)" })
 
 -- =========================
 --      文件路径复制
@@ -145,51 +145,51 @@ end
 -- =========================
 
 -- 窗口布局切换
-map("n", "<leader>wv", "<C-w>t<C-w>H")
-map("n", "<leader>wh", "<C-w>t<C-w>K")
+map("n", "<leader>wv", "<C-w>t<C-w>H", { desc = "Layout: side by side" })
+map("n", "<leader>wh", "<C-w>t<C-w>K", { desc = "Layout: stacked" })
 
 -- 窗口分割
-map("n", "<leader>si", ":vsplit<CR>")
-map("n", "<leader>sv", ":split<CR>")
+map("n", "<leader>si", ":vsplit<CR>", { desc = "Split right" })
+map("n", "<leader>sv", ":split<CR>", { desc = "Split below" })
 
 -- 窗口间移动
-map("n", "<leader>l", "<C-w>l")
-map("n", "<leader>k", "<C-w>k")
-map("n", "<leader>h", "<C-w>h")
-map("n", "<leader>j", "<C-w>j")
+map("n", "<leader>l", "<C-w>l", { desc = "Window right" })
+map("n", "<leader>k", "<C-w>k", { desc = "Window up" })
+map("n", "<leader>h", "<C-w>h", { desc = "Window left" })
+map("n", "<leader>j", "<C-w>j", { desc = "Window down" })
 
 -- 窗口大小调整
-map("n", "<up>", ":res -5<CR>")
-map("n", "<down>", ":res +5<CR>")
-map("n", "<left>", ":vertical resize-5<CR>")
-map("n", "<right>", ":vertical resize+5<CR>")
+map("n", "<up>", ":res -5<CR>", { desc = "Shrink window height" })
+map("n", "<down>", ":res +5<CR>", { desc = "Grow window height" })
+map("n", "<left>", ":vertical resize-5<CR>", { desc = "Shrink window width" })
+map("n", "<right>", ":vertical resize+5<CR>", { desc = "Grow window width" })
 
 -- =========================
 --         会话管理
 -- =========================
 
 -- 鼠标设置
-map("n", "<leader>ma", ":set mouse=a<CR>")   -- 启用鼠标
-map("n", "<leader>mc", ":set mouse=<CR>")    -- 禁用鼠标（便于终端原生选中复制）
+map("n", "<leader>ma", ":set mouse=a<CR>", { desc = "Enable mouse" })
+map("n", "<leader>mc", ":set mouse=<CR>", { desc = "Disable mouse (terminal native select)" })
 
 -- 切换软换行（wrap）
 map("n", "<leader>sw", ":set wrap!<CR>", { desc = "Toggle wrap" })
 
 -- 会话保存和加载（文件名用 Session.vim：tmux-resurrect 恢复 nvim 时按此约定 -S 加载）
-map("n", "<leader>ss", ":mksession! ./Session.vim<CR>")
-map("n", "<leader>sl", ":source ./Session.vim<CR>")
+map("n", "<leader>ss", ":mksession! ./Session.vim<CR>", { desc = "Save session" })
+map("n", "<leader>sl", ":source ./Session.vim<CR>", { desc = "Load session" })
 
 -- =========================
 --         Buffer 操作
 -- =========================
 
 -- Buffer 切换
-map("n", "<A-]>", ":BufferLineCycleNext<CR>")
-map("n", "<A-[>", ":BufferLineCyclePrev<CR>")
+map("n", "<A-]>", ":BufferLineCycleNext<CR>", { desc = "Next buffer" })
+map("n", "<A-[>", ":BufferLineCyclePrev<CR>", { desc = "Prev buffer" })
 
 -- Buffer 移动（重排标签顺序，对应 tmux M-S-M/N 的 swap-window）
-map("n", "<A-}>", ":BufferLineMoveNext<CR>") -- M-S-] 右移
-map("n", "<A-{>", ":BufferLineMovePrev<CR>") -- M-S-[ 左移
+map("n", "<A-}>", ":BufferLineMoveNext<CR>", { desc = "Move buffer right" }) -- M-S-]
+map("n", "<A-{>", ":BufferLineMovePrev<CR>", { desc = "Move buffer left" }) -- M-S-[
 
 -- 固定或取消固定当前 Buffer
 map("n", "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", { desc = "Toggle buffer pin" })
@@ -198,7 +198,7 @@ map("n", "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", { desc = "Toggle buffer p
 map("n", "<A-t>", ":enew<CR>", { desc = "New empty buffer" })
 
 -- Buffer 关闭
-map("n", "<A-w>", ":Bdelete<CR>")
+map("n", "<A-w>", ":Bdelete<CR>", { desc = "Close buffer" })
 map("n", "<A-o>", ":BufferLineCloseOthers<CR>", { desc = "Close other buffers" })
 
 -- 重开上一个关闭的 buffer：Neovim 不记录已关闭 buffer，用 BufDelete 记下最近被删
@@ -224,7 +224,7 @@ end, { desc = "Reopen last closed buffer" })
 for i = 1, 9 do
     map("n", "<A-" .. i .. ">", function()
         require("bufferline").go_to(i, true)
-    end)
+    end, { desc = "Go to buffer " .. i })
 end
 
 -- =========================
@@ -242,7 +242,7 @@ map("n", "<leader>fe", ":e <C-r>=expand('%:h')<CR>/", { silent = false, desc = "
 
 -- Ctrl+/ 注释/取消注释
 -- 多数终端 Ctrl+/ 发送的是 <C-_>，两个键码都映射以兼容
-map("n", "<C-/>", "gcc", { remap = true })
-map("v", "<C-/>", "gc", { remap = true })
-map("n", "<C-_>", "gcc", { remap = true })
-map("v", "<C-_>", "gc", { remap = true })
+for _, key in ipairs({ "<C-/>", "<C-_>" }) do
+    map("n", key, "gcc", { remap = true, desc = "Toggle comment" })
+    map("v", key, "gc", { remap = true, desc = "Toggle comment" })
+end

@@ -2,14 +2,11 @@ local opt = vim.opt
 
 -- 外观设置
 opt.termguicolors = true
-opt.syntax = "on"
 opt.number = true
 opt.relativenumber = true   -- 当前行绝对、其余相对（混合行号）
 opt.cursorline = true
 opt.cursorlineopt = "both"  -- 高亮光标所在整行 + 行号
 opt.wrap = false
-opt.showcmd = true
-opt.wildmenu = true
 -- noice 把 : 命令行改成居中浮窗，原生命令行区域常年空着仍占一行，故收为 0；
 -- 消息由 noice 路由到右上角 nvim-notify 弹窗，可视模式选中量由 lualine 的
 -- selectioncount 组件承接。未点完的按键序列（showcmd）就此没有显示位置：
@@ -18,20 +15,15 @@ opt.cmdheight = 0
 opt.signcolumn = "yes"     -- 符号栏常驻，避免行号跳动
 opt.winborder = "rounded"  -- 浮动窗口默认圆角边框（LSP hover、诊断浮窗等统一）
 opt.colorcolumn = "80,100" -- 80/100 列竖线标尺（对应 VSCode editor.rulers）
+opt.showtabline = 2        -- 标签栏常驻：bufferline 在 VeryLazy 才加载，不预留会让启动画面下跳一行
+opt.laststatus = 3         -- 全局单一状态栏，NvimTree 等侧栏不再各带一条
+opt.fillchars = { eob = " " } -- 文件末尾之后的空行不显示 ~
 
--- 搜索设置
-opt.hlsearch = true
-opt.incsearch = true
+-- 搜索设置（hlsearch / incsearch 为 Neovim 默认开启）
 opt.ignorecase = true
 opt.smartcase = true
 
--- 执行 nohlsearch
-vim.cmd("nohlsearch")
-
--- 兼容性和文件类型设置
-opt.compatible = false
-vim.cmd("filetype plugin indent on")
-
+-- 文件类型设置
 vim.filetype.add({
   filename = {
     [".config"] = "make",
@@ -40,9 +32,6 @@ vim.filetype.add({
     [".*_defconfig"] = "make",
   },
 })
-
--- 编码设置
-opt.encoding = "utf-8"
 
 -- 缩进和制表符设置
 -- opt.expandtab = true
@@ -54,9 +43,6 @@ opt.encoding = "utf-8"
 -- 编辑器行为设置
 opt.scrolloff = 5
 opt.jumpoptions:append("view") -- 切回 buffer 时恢复原来的视口
-opt.textwidth = 0
-opt.indentexpr = ""
-opt.backspace = { "indent", "eol", "start" }
 
 -- 交互响应
 opt.updatetime = 250       -- CursorHold 更快触发（LSP hover / gitsigns）

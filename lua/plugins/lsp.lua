@@ -138,7 +138,15 @@ return {
           -- gutter 标记与下划线仍覆盖全部严重度，可 gh 悬停/]d 跳转看详情。
           severity = { min = vim.diagnostic.severity.WARN },
         },
-        signs = true,
+        -- 与 lualine / bufferline 的诊断图标统一（lualine 默认图标集）
+        signs = {
+          text = {
+            [vim.diagnostic.severity.ERROR] = "󰅚",
+            [vim.diagnostic.severity.WARN] = "󰀪",
+            [vim.diagnostic.severity.INFO] = "󰋽",
+            [vim.diagnostic.severity.HINT] = "󰌶",
+          },
+        },
         underline = true,
         update_in_insert = false,
         severity_sort = true,

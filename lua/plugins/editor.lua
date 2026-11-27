@@ -122,7 +122,7 @@ return {
         -- 不自动在树中定位当前文件；需要时用 tf 手动定位
         update_focused_file = { enable = false },
         view = {
-          -- 自适应宽度：随最长文件名在 [30, 60] 区间内自动伸缩
+          -- 自适应宽度：随最长文件名在 [30, 40] 区间内自动伸缩
           width = {
             min = 30,
             max = 40,
@@ -138,9 +138,26 @@ return {
     "folke/which-key.nvim",
     cond = not vim.g.vscode,  -- 浮窗 UI 在 VS Code 下无法渲染
     event = "VeryLazy",
-    config = function()
-      require("which-key").setup()
-    end,
+    opts = {
+      -- leader 分组名：弹窗里显示用途，而不是 "+N keymaps"
+      spec = {
+        { "<leader>a", group = "AI" },
+        { "<leader>b", group = "buffer" },
+        { "<leader>c", group = "code" },
+        { "<leader>f", group = "find" },
+        { "<leader>g", group = "git (telescope)" },
+        { "<leader>i", group = "git hunk" },
+        { "<leader>it", group = "toggle" },
+        { "<leader>m", group = "mouse / markdown" },
+        { "<leader>n", group = "hex" },
+        { "<leader>r", group = "rename" },
+        { "<leader>s", group = "split / session / wrap" },
+        { "<leader>t", group = "toggle / translate" },
+        { "<leader>w", group = "window layout" },
+        { "<leader>x", group = "hex" },
+        { "<leader>y", group = "copy path" },
+      },
+    },
   },
 
   -- 安全关闭 buffer
