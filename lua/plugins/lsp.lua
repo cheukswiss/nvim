@@ -12,6 +12,7 @@ local servers = {
   clangd = "clangd",
   rust_analyzer = "rust-analyzer",
   bashls = "bash-language-server",
+  buf_ls = "buf",
   jsonls = "json-lsp",
   yamlls = "yaml-language-server",
   cssls = "css-lsp",
@@ -212,6 +213,27 @@ return {
         settings = {
           bashIde = { shellcheckPath = "" },
         },
+      })
+
+      vim.lsp.config("buf_ls", {
+        root_markers = { { "buf.yaml", "buf.work.yaml" }, ".git" },
+        cmd = function(dispatchers, config)
+          local cmd = { "buf", "lsp", "serve", "--log-format=text" }
+          local root = config.root_dir
+          if root and not vim.uv.fs_stat(root .. "/buf.yaml") and not vim.uv.fs_stat(root .. "/buf.work.yaml") then
+            -- 普通 Git 仓库以根目录解析 import，无需创建 buf.yaml。
+            vim.list_extend(cmd, { "--config", "version: v2" })
+          end
+          return vim.lsp.rpc.start(cmd, dispatchers, {
+            cwd = config.cmd_cwd,
+            env = config.cmd_env,
+            detached = config.detached,
+          })
+        end,
+        -- --config 对整个服务进程生效，按根目录复用客户端。
+        reuse_client = function(client, config)
+          return client.name == config.name and client.config.root_dir == config.root_dir
+        end,
       })
 
       -- mason 包名 ≠ 可执行名的 server（vscode 系），enable 前据此查 PATH

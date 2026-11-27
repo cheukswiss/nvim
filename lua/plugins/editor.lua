@@ -8,7 +8,7 @@ return {
       local ts = require("nvim-treesitter")
       local parsers = {
         "bash", "c", "cmake", "cpp", "css", "doxygen", "go", "html", "javascript", "json",
-        "json5", "lua", "markdown", "markdown_inline", "python", "regex", "scss",
+        "json5", "lua", "markdown", "markdown_inline", "proto", "python", "regex", "scss",
         "tsx", "typescript", "vim", "vimdoc", "yaml",
       }
       local installed = ts.get_installed()
