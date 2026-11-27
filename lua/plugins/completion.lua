@@ -73,7 +73,7 @@ return {
             api_key = "DEEPSEEK_API_KEY",
             name = "deepseek",
             end_point = "https://api.deepseek.com/beta/completions",
-            model = "deepseek-v4-pro",
+            model = "deepseek-flash",
             optional = {
               max_tokens = 128,
             },
